@@ -1,0 +1,8 @@
+(executable
+  (name drk)
+  (libraries sha opium caqti caqti-lwt caqti-driver-postgresql uuidm ppx_rapper_lwt)
+  (preprocess (pps ppx_deriving_yojson lwt_ppx ppx_rapper))
+  (public_name drk.exe))
+(env
+  (dev
+    (flags (:standard -w -33))))
