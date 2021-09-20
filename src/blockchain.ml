@@ -1,4 +1,7 @@
-module type Blockchain : sig
+open Transaction
+open Block
+
+module type Blockchain = sig
 
   type t
 
