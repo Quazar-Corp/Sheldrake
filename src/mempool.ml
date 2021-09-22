@@ -1,11 +1,7 @@
 open Transaction
 
-module Mempool : sig 
-
-  type t
-
-end = struct 
-
+module Drakepool : Mempool = struct
+  
   type t = Transaction.t list
 
 end

@@ -1,20 +1,19 @@
+module Transaction : Tx = struct   
 (* Transaction type *)
 (* Serializable record *)  
-module Transaction : sig 
-
-  type t
-
-  val to_string : t -> string
-
-end = struct   
-  
   type t = {
     from_ : string;
-    amount : float;
     to_ : string;
+    amount : float;
     fee : float
   }[@@deriving yojson]
 
   let to_string tx =
-    tx.from_ ^ (Float.to_string tx.amount) ^ tx.to_
+    tx.from_ ^ tx.to_ ^ (Float.to_string tx.amount) ^ (Float.to_string tx.fee)
+
+  let to_yojson tx =
+    [%to_yojson: Transaction.t] tx
+
+  let of_yojson json =
+    [%of_yojson: Transaction.t] json
 end
