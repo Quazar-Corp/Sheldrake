@@ -1,6 +1,7 @@
 module Transaction : Tx = struct   
 (* Transaction type *)
-(* Serializable record *)  
+(* Serializable record *) 
+(* Fees are used in every transaction? *)
   type t = {
     from_ : string;
     to_ : string;
