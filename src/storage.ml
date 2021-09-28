@@ -26,7 +26,7 @@ let data_or_error m =
   | Ok a -> Ok a |> Lwt.return
   | Error e -> Error (Database_error (Caqti_error.show e)) |> Lwt.return
 *)
-
+(* stored chain things *)
 type stored_user = {id : string; name : string; username : string; email : string; password: string}
 (**************************************************************************************************)
 
