@@ -1,7 +1,7 @@
-module Transaction : Tx = struct   
 (* Transaction type *)
 (* Serializable record *) 
 (* Fees are used in every transaction? *)
+module Transaction : Tx = struct   
   type t = {
     from_ : string;
     to_ : string;
@@ -17,4 +17,16 @@ module Transaction : Tx = struct
 
   let of_yojson json =
     [%of_yojson: Transaction.t] json
+end
+
+(*************************************************************************************************)
+
+(* Transaction list with signature *)
+module ScriptSig : TxList = struct 
+
+  type t = {
+    ledger : Transaction.t list;
+    signature : string
+  }[@@deriving yojson]
+
 end
