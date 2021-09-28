@@ -1,3 +1,5 @@
+open Transaction
+
 module Drakeblock : Block = struct
   (* Block type *)
   (* Serializable record *)

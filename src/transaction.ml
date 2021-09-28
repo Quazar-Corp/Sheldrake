@@ -1,32 +1,37 @@
 (* Transaction type *)
 (* Serializable record *) 
-(* Fees are used in every transaction? *)
-module Transaction : Tx = struct   
+module Transaction : sig
+
+  type t
+
+  val to_string : t -> string
+
+  val to_yojson : t -> Yojson.Safe.t
+
+  val of_yojson : Yojson.Safe.t -> t
+
+  val create : string -> string -> float -> t
+
+end = struct 
+  
   type t = {
     from_ : string;
     to_ : string;
     amount : float;
-    fee : float
   }[@@deriving yojson]
 
   let to_string tx =
-    tx.from_ ^ tx.to_ ^ (Float.to_string tx.amount) ^ (Float.to_string tx.fee)
+    tx.from_ ^ tx.to_ ^ (Float.to_string tx.amount)
 
   let to_yojson tx =
-    [%to_yojson: Transaction.t] tx
+    [%to_yojson: t] tx
 
   let of_yojson json =
-    [%of_yojson: Transaction.t] json
-end
+    match [%of_yojson: t] json with
+    | Ok tx -> tx
+    | Error err -> raise (Invalid_argument err)
 
-(*************************************************************************************************)
-
-(* Transaction list with signature *)
-module ScriptSig : TxList = struct 
-
-  type t = {
-    ledger : Transaction.t list;
-    signature : string
-  }[@@deriving yojson]
+  let create from_ to_ amount =
+    {from_=from_; to_=to_; amount=amount}
 
 end

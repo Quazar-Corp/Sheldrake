@@ -14,6 +14,8 @@ module type Blockchain = sig
   val bound32int : int
 
   val length : t -> int
+
+  val get_transactions : t -> Transaction.t list
  
   val get_previous_block : t -> Block.t
 
@@ -22,6 +24,8 @@ module type Blockchain = sig
   val hash_of_nonce : string -> string -> string
 
   val hash_of_string : string -> string
+
+  val add_transaction : t -> from_:string -> to_:string -> amount:float -> unit 
 
   val add_block : Block.t -> t -> t
 
