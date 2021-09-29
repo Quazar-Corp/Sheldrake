@@ -1,7 +1,14 @@
-type t = { 
-  chain : Block.t list;
-  transactions : Transaction.t list
-}[@@deriving yojson]
+type t = Block.t list
+
+type mempool = Transaction.t list
+
+(* Chain to json *)
+let to_yojson chain =
+  Block.list_to_yojson chain
+
+(* Json to chain *)
+let of_yojson json =
+  Block.list_of_yojson json
 
 (* Target of zeros *)
 let target = 4
@@ -12,10 +19,6 @@ let bound32int = 2147483647
 (* Chain size *)
 let length chain =
   List.length chain
-
-(* Return the current list of transactions *)
-let get_transactions chain =
-  chain.transactions
 
 (* Returns the last block *)
 let get_previous_block chain =
@@ -38,9 +41,9 @@ let hash_of_string str =
   Sha256.to_hex (Sha256.string str)
 
 (* Create transaction *)
-let add_transaction ~chain ~from_ ~to_ ~amount =
+let add_transaction ~from_ ~to_ ~amount ~mempool =
   Transaction.create from_ to_ amount
-  |> fun tx -> tx :: chain.transactions
+  |> fun tx -> tx :: mempool
   |> fun _ -> ()
 
 (* Add new block to the chain *)

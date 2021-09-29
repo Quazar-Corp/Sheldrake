@@ -12,17 +12,14 @@ type t = {
 }[@@deriving yojson]
 
 (* Block to json *)
-let to_yojson block =
-  [%to_yojson: t] block
+let list_to_yojson chain =
+  [%to_yojson: t list] chain
 
 (* Json to Block *)
-let of_yojson json =
-  let block = 
-    match [%of_yojson: t] json with
+let list_of_yojson json =
+  match [%of_yojson: t list] json with
     | Ok blk -> blk
     | Error err -> err |> fun _ -> raise Parsing.Parse_error
-  in
-  fun _ -> block
 
 (* Return a new block *)
 let create ~nonce ~transactions ~prev_hash =

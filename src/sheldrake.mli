@@ -1,5 +1,7 @@
 type t
 
+type mempool
+
 val to_yojson : t -> Yojson.Safe.t
 
 val of_yojson : Yojson.Safe.t -> t
@@ -10,8 +12,6 @@ val bound32int : int
 
 val length : t -> int
 
-val get_transactions : t -> Transaction.t list
-
 val get_previous_block : t -> Block.t
 
 val generate_target : string
@@ -20,7 +20,7 @@ val hash_of_nonce : string -> string -> string
 
 val hash_of_string : string -> string
 
-val add_transaction : t -> from_:string -> to_:string -> amount:float -> unit 
+val add_transaction : from_:string -> to_:string -> amount:float -> mempool:Transaction.t list -> unit 
 
 val add_block : Block.t -> t -> t
 
