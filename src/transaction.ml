@@ -1,37 +1,23 @@
 (* Transaction type *)
 (* Serializable record *) 
-module Transaction : sig
+type t = {
+  from_ : string;
+  to_ : string;
+  amount : float;
+}[@@deriving yojson {exn = true}] (* I don't know if that is a good idea *)
 
-  type t
+(* Transaction to json *)
+let to_yojson tx =
+  [%to_yojson: t] tx
 
-  val to_string : t -> string
+let of_yojson json =
+  match [%of_yojson: t] json with
+  | Ok tx -> tx
+  | Error err -> err |> fun _ -> raise Parsing.Parse_error
 
-  val to_yojson : t -> Yojson.Safe.t
+let to_string tx =
+  tx.from_ ^ tx.to_ ^ (Float.to_string tx.amount)
 
-  val of_yojson : Yojson.Safe.t -> t
+let create from_ to_ amount =
+  {from_=from_; to_=to_; amount=amount}
 
-  val create : string -> string -> float -> t
-
-end = struct 
-  
-  type t = {
-    from_ : string;
-    to_ : string;
-    amount : float;
-  }[@@deriving yojson]
-
-  let to_string tx =
-    tx.from_ ^ tx.to_ ^ (Float.to_string tx.amount)
-
-  let to_yojson tx =
-    [%to_yojson: t] tx
-
-  let of_yojson json =
-    match [%of_yojson: t] json with
-    | Ok tx -> tx
-    | Error err -> raise (Invalid_argument err)
-
-  let create from_ to_ amount =
-    {from_=from_; to_=to_; amount=amount}
-
-end

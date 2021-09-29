@@ -1,38 +1,32 @@
-open Transaction
-open Block
+type t
 
-module type Blockchain = sig
+val to_yojson : t -> Yojson.Safe.t
 
-  type t
+val of_yojson : Yojson.Safe.t -> t
 
-  val to_yojson : t -> Yojson.Safe.t
+val target : int
 
-  val of_yojson : Yojson.Safe.t -> t
+val bound32int : int
 
-  val target : int
+val length : t -> int
 
-  val bound32int : int
+val get_transactions : t -> Transaction.t list
 
-  val length : t -> int
+val get_previous_block : t -> Block.t
 
-  val get_transactions : t -> Transaction.t list
- 
-  val get_previous_block : t -> Block.t
+val generate_target : string
 
-  val generate_target : string
+val hash_of_nonce : string -> string -> string
 
-  val hash_of_nonce : string -> string -> string
+val hash_of_string : string -> string
 
-  val hash_of_string : string -> string
+val add_transaction : t -> from_:string -> to_:string -> amount:float -> unit 
 
-  val add_transaction : t -> from_:string -> to_:string -> amount:float -> unit 
+val add_block : Block.t -> t -> t
 
-  val add_block : Block.t -> t -> t
+val proof_of_work : int -> int
 
-  val proof_of_work : int -> int
+val chain_is_valid  : t -> bool
 
-  val chain_is_valid  : t -> bool
+val mine_block : t -> Transaction.t list -> Block.t
 
-  val mine_block : t -> Transaction.t list -> Block.t
-
-end

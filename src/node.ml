@@ -1,8 +1,5 @@
-open Sheldrake
-open Transaction
 open Opium
     
-
 (* GET mine_block *)
 let mine_block req =
   let open Lwt.Syntax 
@@ -10,7 +7,7 @@ let mine_block req =
   let* chain = Storage.get_chain ()
   in
   let new_block = 
-    Sheldrake.mine_block chain [{from_="Cleveland"; Transaction.amount=54000000.; to_="Lakers"}]
+    Sheldrake.mine_block chain [(Transaction.create "Cleveland" "Lakers" 54000000.)]
   in
   Storage.insert_block new_block 
   |> fun _ -> req 
