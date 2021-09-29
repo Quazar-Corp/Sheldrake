@@ -1,9 +1,9 @@
 (* Transaction type *)
 type t
 
-val to_yojson : t -> Yojson.Safe.t
+val of_yojson : Yojson.Safe.t -> (t, string) Result.result
 
-val of_yojson : Yojson.Safe.t -> t
+val to_yojson : t -> Yojson.Safe.t
 
 val to_string : t -> string
 

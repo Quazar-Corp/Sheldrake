@@ -1,5 +1,3 @@
-open Transaction
-
 (* Block type *)
 (* Serializable record *)
 type t = {
@@ -18,7 +16,7 @@ let list_to_yojson chain =
 (* Json to Block *)
 let list_of_yojson json =
   match [%of_yojson: t list] json with
-    | Ok blk -> blk
+    | Ok chain -> chain
     | Error err -> err |> fun _ -> raise Parsing.Parse_error
 
 (* Return a new block *)
