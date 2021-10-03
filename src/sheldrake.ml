@@ -1,7 +1,5 @@
 type t = Block.t list
 
-type mempool = Transaction.t list
-
 (* Chain to json *)
 let to_yojson chain =
   Block.list_to_yojson chain
