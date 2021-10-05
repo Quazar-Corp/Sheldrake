@@ -38,12 +38,6 @@ let hash_of_nonce str nonce =
 let hash_of_string str =
   Sha256.to_hex (Sha256.string str)
 
-(* Create transaction *)
-let add_transaction ~from_ ~to_ ~amount ~mempool =
-  Transaction.create from_ to_ amount
-  |> fun tx -> tx :: mempool
-  |> fun _ -> ()
-
 (* Add new block to the chain *)
 let add_block block chain =
   let idx = List.length chain
