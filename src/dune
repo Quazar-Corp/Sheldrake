@@ -2,4 +2,9 @@
   (name driver)
   (libraries sha opium caqti caqti-lwt caqti-driver-postgresql uuidm ppx_rapper_lwt)
   (preprocess (pps ppx_deriving_yojson lwt_ppx ppx_rapper))
-  (public_name driver.exe))
+  (public_name driver.exe)
+  (foreign_stubs 
+    (language c) 
+    (flags 
+      :standard )
+      (names addr)))

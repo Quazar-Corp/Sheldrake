@@ -34,6 +34,6 @@ let _ =
   App.empty
   |> App.get "/blockchain/mine" mine_block
   |> App.get "/blockchain/chain" read_chain
-  |> App.run_command 
+  |> App.run_command
 
 
