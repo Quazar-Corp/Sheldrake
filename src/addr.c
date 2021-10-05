@@ -20,9 +20,9 @@
 
 CAMLprim value stub_get_global_addr(value unit)
 {
+    // CAMLlocalN always expected a CAMLparamN before
     CAMLparam1(unit);
-    CAMLlocal1(global_addr);
-    
+    CAMLlocal1(global_addr);   // OCaml local var in C declaration 
     
     char hostbuffer[256];
     char *IPbuffer;
@@ -40,6 +40,7 @@ CAMLprim value stub_get_global_addr(value unit)
     IPbuffer = inet_ntoa(*((struct in_addr*)
                            host_entry->h_addr_list[0]));
 
+    // Check other allocs to successful return the type you need
     global_addr = caml_alloc_string(sizeof(char[15]));
     memcpy(String_val(global_addr), IPbuffer, sizeof(char[15]));
 
