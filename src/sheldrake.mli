@@ -14,8 +14,6 @@ val get_previous_block : t -> Block.t
 
 val generate_target : string
 
-val hash_of_nonce : string -> string -> string
-
 val hash_of_string : string -> string
 
 val add_block : Block.t -> t -> t

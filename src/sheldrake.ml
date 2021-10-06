@@ -30,10 +30,6 @@ let generate_target =
     else aux ("0" ^ acc) (count+1)
   in aux "" 0
 
-(* Hashing with nonce concatened *)
-let hash_of_nonce str nonce =
-  Sha256.to_hex (Sha256.string (nonce ^ str))
-
 (* Get hash from block json *)
 let hash_of_string str =
   Sha256.to_hex (Sha256.string str)
