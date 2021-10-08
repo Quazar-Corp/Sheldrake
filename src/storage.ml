@@ -1,5 +1,5 @@
 (* I'm lazy to use a real db here so will be a simple file*)
-let db = "database_blockchain.json";;
+let db = "src/database.json"
 
 (* READ chain *)
 let get_chain () =
