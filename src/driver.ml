@@ -1,4 +1,7 @@
 open Opium
+
+(* Current node info *)
+let this_node = Node.retrieve_host_entries
     
 (* GET mine_block *)
 let mine_block req =
@@ -32,6 +35,8 @@ let read_chain req =
 (* App *)
 let _ = 
   App.empty
+  |> App.host (Node.addr this_node)
+  |> App.port 4444
   |> App.get "/blockchain/mine" mine_block
   |> App.get "/blockchain/chain" read_chain
   |> App.run_command
