@@ -14,10 +14,13 @@ val host_info_to_yojson : host_info -> Yojson.Safe.t
 (* Add a new node to the network *)
 val add_node : t -> host_info -> host_info
 
+(* retrieve loopback global scope ip and localhost name*)
 val retrieve_host_entries : host_info
 
-(* Retrieve node ip *)
+(* get node ip *)
 val addr : host_info -> string
 
-(* Retrieve node host name *)
+(* get node hostname *)
 val name : host_info -> string
+
+val update_nodes_on_network : addr_list -> unit
