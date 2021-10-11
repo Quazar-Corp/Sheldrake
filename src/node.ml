@@ -21,3 +21,6 @@ let addr current_node =
 
 let name current_node = 
   current_node.hostname 
+
+let update_nodes_on_network addr_list =
+  addr_list |> fun _ -> ()

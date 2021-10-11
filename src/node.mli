@@ -23,4 +23,4 @@ val addr : host_info -> string
 (* get node hostname *)
 val name : host_info -> string
 
-val update_nodes_on_network : addr_list -> unit
+val update_nodes_on_network : t -> unit
