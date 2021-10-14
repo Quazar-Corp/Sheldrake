@@ -1,40 +1,31 @@
 type t = Block.t list
 
-(* Chain to json *)
 let to_yojson chain =
   Block.list_to_yojson chain
 
-(* Json to chain *)
 let of_yojson json =
   Block.list_of_yojson json
 
-(* Target of zeros *)
 let target = 4
 
-(* Range for random library *)
 let bound32int = 2147483647
 
-(* Chain size *)
 let length chain =
   List.length chain
 
-(* Returns the last block *)
 let get_previous_block chain =
   (* List is storage with the genesis block on the end *)
   List.nth (List.rev chain) ((List.length chain) - 1)
 
-(* Generates a string with a number of zeros defined as the target *)
 let generate_target =
   let rec aux acc count = 
     if count = target then acc 
     else aux ("0" ^ acc) (count+1)
   in aux "" 0
 
-(* Get hash from block json *)
 let hash_of_string str =
   Sha256.to_hex (Sha256.string str)
 
-(* Add new block to the chain *)
 let add_block block chain =
   let idx = List.length chain
   in
@@ -43,7 +34,6 @@ let add_block block chain =
   |> fun () -> block :: chain
 
 
-(* mine function (correct nonce version)*)
 let proof_of_work prev_nonce =
   let rec pow a = function
     | 0 -> 1
@@ -64,7 +54,6 @@ let proof_of_work prev_nonce =
   in
   aux (Random.int32 (Int32.of_int bound32int))
 
-(* Chain validation *)
 let chain_is_valid chain =
   let rec aux = function
     | [] | _ :: [] -> true (* end of the list *)
@@ -72,10 +61,18 @@ let chain_is_valid chain =
       else false
   in aux chain
 
-(* Mining one block *)
 let mine_block chain transactions =
   let nonce = (proof_of_work (Block.get_nonce (get_previous_block chain))) (* last block nonce *)
   in
   let prev_hash = Block.get_hash (get_previous_block chain) (* last block hash *)
   in
   Block.create ~nonce ~transactions ~prev_hash
+
+let replace_chain chain_list max_length =
+  let rec aux bigger size = function
+    | [] -> bigger
+    | hd :: tl -> if (List.length hd) > size then aux hd size tl
+                  else aux bigger size tl
+  in
+  aux [] max_length chain_list 
+
