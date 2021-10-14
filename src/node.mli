@@ -23,4 +23,9 @@ val addr : host_info -> string
 (* get node hostname *)
 val name : host_info -> string
 
+(* Share to the network that the new node on network *)
 val update_nodes_on_network : t -> unit
+
+val update_chain_on_network : Sheldrake.t -> unit
+
+val update_mempool_on_network : Transaction.t list -> unit
