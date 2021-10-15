@@ -1,8 +1,8 @@
 (executable
+  (public_name sdk.exe)
   (name driver)
-  (libraries sha opium cohttp cohttp-lwt-unix caqti caqti-lwt caqti-driver-postgresql uuidm ppx_rapper_lwt)
+  (libraries sha opium cohttp cohttp-lwt-unix caqti caqti-lwt caqti-driver-postgresql uuidm ppx_rapper_lwt alcotest)
   (preprocess (pps ppx_deriving_yojson lwt_ppx ppx_rapper))
-  (public_name driver.exe)
   (foreign_stubs 
     (language c) 
     (flags 

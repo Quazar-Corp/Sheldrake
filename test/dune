@@ -1,0 +1,3 @@
+(tests
+ (names sheldrake_tests qcheck_testes)
+ (libraries qcheck-core qcheck-alcotest alcotest))
