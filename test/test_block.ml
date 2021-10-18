@@ -1,5 +1,3 @@
-open Transaction
-open Block
 open Alcotest
 
 (* ARRANGE *)

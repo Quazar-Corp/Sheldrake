@@ -1,3 +1,4 @@
 (tests
  (names test_block)
- (libraries qcheck-core qcheck-alcotest alcotest))
+ (libraries qcheck-core qcheck-alcotest alcotest)
+ (package sheldrake))
