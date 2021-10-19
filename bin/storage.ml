@@ -1,5 +1,5 @@
 (* I'm lazy to use a real db here so will be a simple file*)
-let db = "src/database.json"
+let db = "bin/database.json"
 
 (* READ chain *)
 let get_chain () =

@@ -1,5 +1,17 @@
 [
   {
+    "block_index": 8,
+    "timestamp": "1634652083.",
+    "nonce": 828134333,
+    "transactions": [
+      { "from_": "Cleveland", "to_": "Lakers", "amount": 54000000.0 }
+    ],
+    "prev_hash":
+      "38eedef2863ed7057dfcdbdbfd5d8a5b6cd43eec17f12993c3b317d966b49e19",
+    "hash":
+      "d2cbfe6fd76856e827c10bf7a343867eb4573f275e55f7aa0aed859aaaab39c8"
+  },
+  {
     "block_index": 7,
     "timestamp": "1634060709.",
     "nonce": 2047864322,
