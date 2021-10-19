@@ -1,3 +1,5 @@
+open Drake
+
 type t = Block.t list
 
 let to_yojson chain =
