@@ -22,3 +22,7 @@ val addr : host_info -> string
 
 (* get node hostname *)
 val name : host_info -> string
+
+(* ip list to make the requests *)
+val get_address_list : t -> unit
+

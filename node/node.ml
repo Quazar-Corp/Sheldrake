@@ -21,3 +21,11 @@ let addr current_node =
 
 let name current_node = 
   current_node.hostname 
+
+let get_address_list network =
+  let rec aux acc = function
+    | [] -> ()
+    | hd :: tl -> aux ((addr hd) :: acc) tl 
+  in
+  aux [] network
+

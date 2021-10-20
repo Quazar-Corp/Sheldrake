@@ -1,0 +1,4 @@
+(library
+  (name protocol)
+  (libraries node drake unix)
+  (preprocess (pps ppx_deriving_yojson)))
