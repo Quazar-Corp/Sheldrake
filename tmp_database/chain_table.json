@@ -1,29 +1,5 @@
 [
   {
-    "block_index": 2,
-    "timestamp": "1634862143.",
-    "nonce": 695955997,
-    "transactions": [
-      { "from_": "Cleveland", "to_": "Lakers", "amount": 54000000.0 }
-    ],
-    "prev_hash":
-      "cdfef693bdfb07b872339f269399384349a890a48ccdeb9fc494f40bd192f11b",
-    "hash":
-      "29d2fd6a1086a9d61c7a6887a6cc8837d561ea12db8262033350b712c3d46e22"
-  },
-  {
-    "block_index": 1,
-    "timestamp": "1634862136.",
-    "nonce": 1422059064,
-    "transactions": [
-      { "from_": "Cleveland", "to_": "Lakers", "amount": 54000000.0 }
-    ],
-    "prev_hash":
-      "883e47459066d508517b2ad662e44f6547aa48ee7c87463ea17b826246701fd0",
-    "hash":
-      "cdfef693bdfb07b872339f269399384349a890a48ccdeb9fc494f40bd192f11b"
-  },
-  {
     "block_index": 0,
     "timestamp": "1631761355.",
     "nonce": 0,
