@@ -27,7 +27,7 @@ val generate_target : string
 val hash_of_string : string -> string
 
 (* Add new block to the chain *)
-val add_block : Block.t -> t -> t
+val add_block : t -> Block.t -> t
 
 (* mine function (correct nonce version)*)
 val proof_of_work : int -> int

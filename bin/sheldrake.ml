@@ -28,7 +28,7 @@ let generate_target =
 let hash_of_string str =
   Sha256.to_hex (Sha256.string str)
 
-let add_block block chain =
+let add_block chain block =
   let idx = List.length chain
   in
   Block.update_index block idx

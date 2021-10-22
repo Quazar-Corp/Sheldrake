@@ -32,6 +32,30 @@ let read_chain req =
   in
   req |> fun _req -> Lwt.return response
 
+(* GET get_mempool *)
+let read_mempool req =
+  let open Lwt.Syntax 
+  in
+  let* mempool = Storage.get_mempool ()
+  in
+  let json = Mempool.to_yojson mempool
+  in
+  let response = Response.of_json json
+  in
+  req |> fun _req -> Lwt.return response
+
+(* POST add_transaction *)
+let add_transaction req =
+  let open Lwt.Syntax in
+  let* json = Request.to_json_exn req in
+  let response =
+    match Transaction.of_yojson json with
+    | Ok tx -> tx |> Storage.insert_transaction |> fun _ -> Response.of_json (Transaction.to_yojson tx)
+    | Error err -> err |> fun _ -> Response.of_json (`Assoc ["message", `String "Verify the syntax and the name of fields!"])
+                       |> Response.set_status `Bad_request 
+  in
+  Lwt.return response
+
 
 (* App *)
 let _ = 
@@ -40,6 +64,8 @@ let _ =
   |> App.port 4444
   |> App.get "/blockchain/mine" mine_block
   |> App.get "/blockchain/chain" read_chain
+  |> App.get "/blockchain/mempool" read_mempool
+  |> App.post "/blockchain/transaction" add_transaction
   |> App.run_command
 
 

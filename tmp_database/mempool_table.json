@@ -1,0 +1,5 @@
+[
+  { "sender": "Knicks", "receiver": "Lakers", "amount": 60000000.0 },
+  { "sender": "Wizards", "receiver": "Lakers", "amount": 34000000.0 },
+  { "sender": "Timberwolves", "receiver": "Knicks", "amount": 24000000.0 }
+]
