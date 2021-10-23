@@ -1,4 +1,5 @@
 (tests
  (names test_block)
  (libraries opium protocol node drake qcheck-core qcheck-alcotest alcotest)
+ (preprocess (pps ppx_deriving_yojson))
  (package sheldrake))

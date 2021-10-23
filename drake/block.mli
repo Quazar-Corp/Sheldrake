@@ -1,5 +1,9 @@
 type t
 
+val of_yojson : Yojson.Safe.t -> (t, string) Result.result
+
+val to_yojson : t -> Yojson.Safe.t
+
 val list_to_yojson : t list -> Yojson.Safe.t
 
 val list_of_yojson : Yojson.Safe.t -> t list
