@@ -13,18 +13,18 @@ let get_chain () =
       let db_json =
         Yojson.Safe.from_string (String.concat "\n" db_str)
       in 
-      Lwt.return (Sheldrake.of_yojson db_json))
+      Lwt.return (Chain.of_yojson db_json))
 
 (* CREATE block *)
 let insert_block block =
   let open Lwt.Syntax in
   let* chain = get_chain () 
   in
-  let updated_chain = Sheldrake.add_block chain block
+  let updated_chain = Chain.add_block chain block
   in
   Lwt_io.with_file ~mode:Output chain_table (fun output_channel ->
       let chain_string =
-        updated_chain |> Sheldrake.to_yojson |> Yojson.Safe.pretty_to_string
+        updated_chain |> Chain.to_yojson |> Yojson.Safe.pretty_to_string
       in
       Lwt_io.write output_channel chain_string)
 
@@ -51,3 +51,4 @@ let insert_transaction tx =
         updated_mempool |> Mempool.to_yojson |> Yojson.Safe.pretty_to_string
       in
       Lwt_io.write output_channel mempool_string)
+

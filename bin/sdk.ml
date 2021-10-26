@@ -1,4 +1,5 @@
 open Drake
+open Database
 open Opium
 
 (* Current node info *)
@@ -11,12 +12,12 @@ let mine_block req =
   let* chain = Storage.get_chain ()
   in
   let new_block = 
-    Sheldrake.mine_block chain [(Transaction.create "Cleveland" "Lakers" 54000000.)]
+    Chain.mine_block chain [(Transaction.create "Cleveland" "Lakers" 54000000.)]
   in
   Storage.insert_block new_block 
   |> fun _ -> req 
   |> fun _req -> Response.of_json (`Assoc ["message", `String "Successful mined!";
-                                           "length", `Int ((Sheldrake.length chain)+1)])
+                                           "length", `Int ((Chain.length chain)+1)])
   |> Response.set_status `Created
   |> Lwt.return
   
@@ -26,7 +27,7 @@ let read_chain req =
   in
   let* chain = Storage.get_chain ()
   in
-  let json = Sheldrake.to_yojson chain
+  let json = Chain.to_yojson chain
   in
   let response = Response.of_json json
   in

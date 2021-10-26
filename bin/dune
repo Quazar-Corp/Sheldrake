@@ -1,5 +1,6 @@
 (executable
   (public_name sheldrake)
   (name sdk)
-  (libraries protocol node drake sha opium cohttp cohttp-lwt-unix caqti caqti-lwt caqti-driver-postgresql uuidm ppx_rapper_lwt alcotest)
+  (libraries chain database protocol node drake sha opium cohttp cohttp-lwt-unix 
+             caqti caqti-lwt caqti-driver-postgresql uuidm ppx_rapper_lwt alcotest)
   (preprocess (pps ppx_deriving_yojson lwt_ppx ppx_rapper)))
