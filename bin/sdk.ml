@@ -51,22 +51,58 @@ let add_transaction req =
   let* json = Request.to_json_exn req in
   let response =
     match Transaction.of_yojson json with
-    | Ok tx -> tx |> Storage.insert_transaction |> fun _ -> Response.of_json (Transaction.to_yojson tx)
+    | Ok tx -> tx |> Storage.insert_transaction 
+                  |> fun _ -> Response.of_json (Transaction.to_yojson tx)
+                  |> Response.set_status `Created
     | Error err -> err |> fun _ -> Response.of_json (`Assoc ["message", `String "Verify the syntax and the name of fields!"])
                        |> Response.set_status `Bad_request 
   in
   Lwt.return response
 
+(* GET get_network *)
+let read_network req =
+  let open Lwt.Syntax 
+  in
+  let* network = Storage.get_network ()
+  in
+  let json = Node.to_yojson network
+  in
+  let response = Response.of_json json
+  in
+  req |> fun _req -> Lwt.return response
+
+(* POST add_node *)
+let add_node req =
+  let open Lwt.Syntax in
+  let* json = Request.to_json_exn req in
+  let response =
+    match Node.host_info_of_yojson json with
+    | Ok host -> host |> Storage.update_nodes 
+                      |> fun _ -> Response.of_json (Node.host_info_to_yojson host)
+                      |> Response.set_status `Created
+    | Error err -> err |> fun _ -> Response.of_json (`Assoc ["message", `String "Verify host syntax"])
+                       |> Response.set_status `Bad_request 
+  in
+  Lwt.return response
+
+(* Setting the new node on network *)
+let start_node () =
+  if not (Node.check_current_node_on_network (Lwt_main.run (Storage.get_network ())) this_node) 
+  then Storage.update_nodes this_node
+  else Lwt.return_unit
 
 (* App *)
-let _ = 
-  App.empty
+let _ =
+  Lwt_main.run (start_node ())
+  |> fun () -> App.empty
   |> App.host (Node.addr this_node)
-  |> App.port 4444
+  |> App.port 8333
   |> App.get "/blockchain/mine" mine_block
   |> App.get "/blockchain/chain" read_chain
   |> App.get "/blockchain/mempool" read_mempool
   |> App.post "/blockchain/transaction" add_transaction
+  |> App.get "/blockchain/network" read_network
+  |> App.post "/blockchain/node" add_node
   |> App.run_command
 
 

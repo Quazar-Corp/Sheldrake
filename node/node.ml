@@ -5,10 +5,28 @@ type host_info = {
 
 type t = host_info list
 
+let (=) host_1 host_2 =
+  let name =
+    if (String.compare host_1.hostname host_2.hostname) = 0 then true else false 
+  in
+  let address =
+    if (String.compare host_1.address host_2.address) = 0 then true else false
+  in
+  if name && address then true else false
+
+
 external get_global_addr : unit -> string = "stub_get_global_addr"
 
+let of_yojson json =
+  match [%of_yojson: host_info list] json with
+    | Ok network -> network
+    | Error err -> err |> fun _ -> raise Parsing.Parse_error
+
+let to_yojson nodes =
+  [%to_yojson: host_info list] nodes
+
 let add_node nodes address =
-  address :: nodes |> fun _ -> address
+  address :: nodes 
 
 let retrieve_host_entries =
   let host_name = Unix.gethostname () in
@@ -22,10 +40,9 @@ let addr current_node =
 let name current_node = 
   current_node.hostname 
 
-let get_address_list network =
-  let rec aux acc = function
-    | [] -> ()
-    | hd :: tl -> aux ((addr hd) :: acc) tl 
+let check_current_node_on_network network node =
+  let rec aux = function
+    | [] -> false
+    | hd :: tl -> if hd = node then true else aux tl
   in
-  aux [] network
-
+  aux network

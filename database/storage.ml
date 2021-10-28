@@ -3,6 +3,7 @@ open Drake
 (* Real DB in future *)
 let chain_table = "tmp_database/chain_table.json"
 let mempool_table = "tmp_database/mempool_table.json"
+let node_table = "tmp_database/nodes_table.json"
 
 (* READ chain *)
 let get_chain () =
@@ -52,3 +53,26 @@ let insert_transaction tx =
       in
       Lwt_io.write output_channel mempool_string)
 
+(* READ nodes *)
+let get_network () =
+  Lwt_io.with_file ~mode:Input node_table (fun input_channel ->
+      let open Lwt.Syntax in
+      let* db_str = Lwt_io.read_lines input_channel |> Lwt_stream.to_list
+      in
+      let db_json =
+        Yojson.Safe.from_string (String.concat "\n" db_str)
+      in 
+      Lwt.return (Node.of_yojson db_json))
+
+(* CREATE Transaction *)
+let update_nodes node =
+  let open Lwt.Syntax in
+  let* network = get_network () 
+  in
+  let updated_network = Node.add_node network node
+  in
+  Lwt_io.with_file ~mode:Output node_table (fun output_channel ->
+      let network_string =
+        updated_network |> Node.to_yojson |> Yojson.Safe.pretty_to_string
+      in
+      Lwt_io.write output_channel network_string)
