@@ -27,7 +27,7 @@ CAMLprim value stub_get_global_addr(value unit)
     char hostbuffer[256];
     char *IPbuffer;
     struct hostent *host_entry;
-    int hostname;
+    int hostname, final_ip_size;
   
     // To retrieve hostname
     hostname = gethostname(hostbuffer, sizeof(hostbuffer));
@@ -40,9 +40,11 @@ CAMLprim value stub_get_global_addr(value unit)
     IPbuffer = inet_ntoa(*((struct in_addr*)
                            host_entry->h_addr_list[0]));
 
+    final_ip_size = strlen(IPbuffer);
+
     // Check other allocs to successful return the type you need
-    global_addr = caml_alloc_string(sizeof(char[15]));
-    memcpy(String_val(global_addr), IPbuffer, sizeof(char[15]));
+    global_addr = caml_alloc_string(sizeof(char[final_ip_size]));
+    memcpy(String_val(global_addr), IPbuffer, sizeof(char[final_ip_size]));
 
     CAMLreturn(global_addr);
 }
