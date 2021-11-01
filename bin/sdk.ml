@@ -7,6 +7,7 @@ let this_node = Node.retrieve_host_entries
     
 (* GET mine_block *)
 let mine_block req =
+  Printf.printf "[GET] mine_block\n%!";
   let open Lwt.Syntax 
   in
   let* chain = Storage.get_chain ()
@@ -23,6 +24,7 @@ let mine_block req =
   
 (* GET get_chain *)
 let read_chain req =
+  Printf.printf "[GET] read_chain | Client:%s | Date:%s \n%!" (Option.get (Request.header "client" req)) (Int.to_string (Unix.localtime (Unix.time ())).tm_hour);
   let open Lwt.Syntax 
   in
   let* chain = Storage.get_chain ()
@@ -35,6 +37,7 @@ let read_chain req =
 
 (* GET get_mempool *)
 let read_mempool req =
+  Printf.printf "[GET] mine_block\n%!";
   let open Lwt.Syntax 
   in
   let* mempool = Storage.get_mempool ()
@@ -47,6 +50,7 @@ let read_mempool req =
 
 (* POST add_transaction *)
 let add_transaction req =
+  Printf.printf "[GET] mine_block\n%!";
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
   let response =
@@ -61,6 +65,7 @@ let add_transaction req =
 
 (* GET get_network *)
 let read_network req =
+  Printf.printf "[GET] mine_block\n%!";
   let open Lwt.Syntax 
   in
   let* network = Storage.get_network ()
@@ -73,6 +78,7 @@ let read_network req =
 
 (* POST add_node *)
 let add_node req =
+  Printf.printf "[GET] mine_block\n%!";
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
   let response =
