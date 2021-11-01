@@ -1,3 +1,11 @@
+#ifdef __APPLE__
+#define OS_INDEX 1
+#endif
+
+#ifdef __linux__
+#define OS_INDEX 0
+#endif
+
 #define CAML_NAME_SPACE
 /* this part implement the OCaml binding */
 #include <caml/mlvalues.h>
@@ -38,7 +46,7 @@ CAMLprim value stub_get_global_addr(value unit)
     // To convert an Internet network
     // address into ASCII string
     IPbuffer = inet_ntoa(*((struct in_addr*)
-                           host_entry->h_addr_list[0]));
+                           host_entry->h_addr_list[OS_INDEX]));
 
     final_ip_size = strlen(IPbuffer);
 
