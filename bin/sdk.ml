@@ -24,7 +24,7 @@ let mine_block req =
   
 (* GET get_chain *)
 let read_chain req =
-  Printf.printf "[GET] read_chain | Client:%s | Date:%s \n%!" (Option.get (Request.header "client" req)) (Int.to_string (Unix.localtime (Unix.time ())).tm_hour);
+  Logs.info ~func_name:"read_chain" ~request:req ~req_type:"GET" ~time:(Unix.time ()); 
   let open Lwt.Syntax 
   in
   let* chain = Storage.get_chain ()
