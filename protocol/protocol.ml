@@ -1,5 +1,4 @@
 open Database
-open Opium
 
 let update_nodes_on_network new_node =
   Lwt_main.run (Storage.update_nodes new_node);
@@ -14,9 +13,11 @@ let update_nodes_on_network new_node =
   let rec aux = function
     | [] -> Lwt.return_unit
     | hd :: tl -> if hd = new_node then aux tl
-                  else Request.post ?body:(Option.some (Body.of_string network_string))
-                                    ?headers:(Option.some (Headers.add (Headers.empty) "Client" client_addr))
-                                    ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/node")
+                  else Printf.printf "Sending request to http://%s:8333/blockchain/chain%!\n" (Node.addr hd) 
+                      |> fun () -> (Cohttp_lwt_unix.Client.post
+                                   ?body:(Option.some (Cohttp_lwt.Body.of_string network_string))
+                                   ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
+                                   (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/node")))
                       |> fun _ -> aux tl
   in
   aux (Node.extract_type updated_network)
