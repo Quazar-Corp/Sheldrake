@@ -64,7 +64,7 @@ let get_network () =
       in 
       Lwt.return (Node.of_yojson db_json))
 
-(* CREATE Transaction *)
+(* CREATE Node *)
 let update_nodes node =
   let open Lwt.Syntax in
   let* network = get_network () 
@@ -74,5 +74,13 @@ let update_nodes node =
   Lwt_io.with_file ~mode:Output node_table (fun output_channel ->
       let network_string =
         updated_network |> Node.to_yojson |> Yojson.Safe.pretty_to_string
+      in
+      Lwt_io.write output_channel network_string)
+
+(* CREATE Node *)
+let replace_network network =
+  Lwt_io.with_file ~mode:Output node_table (fun output_channel ->
+      let network_string =
+        network |> Node.to_yojson |> Yojson.Safe.pretty_to_string
       in
       Lwt_io.write output_channel network_string)

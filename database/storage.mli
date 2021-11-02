@@ -17,3 +17,6 @@ val get_network : unit -> Node.t Lwt.t
 
 (* Update node list *)
 val update_nodes : Node.host_info -> unit Lwt.t 
+
+(* Replace network list *)
+val replace_network : Node.t -> unit Lwt.t 

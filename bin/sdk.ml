@@ -7,13 +7,15 @@ let this_node = Node.retrieve_host_entries
     
 (* GET mine_block *)
 let mine_block req =
-  Printf.printf "[GET] mine_block\n%!";
+  Logs.info ~func_name:"mine_block" ~request:req ~req_type:"GET" ~time:(Unix.time ()); 
   let open Lwt.Syntax 
   in
   let* chain = Storage.get_chain ()
   in
+  let* mempool = Storage.get_mempool ()
+  in
   let new_block = 
-    Chain.mine_block chain [(Transaction.create "Cleveland" "Lakers" 54000000.)]
+    Chain.mine_block chain (Mempool.five_transactions mempool) 
   in
   Storage.insert_block new_block 
   |> fun _ -> req 
@@ -37,7 +39,7 @@ let read_chain req =
 
 (* GET get_mempool *)
 let read_mempool req =
-  Printf.printf "[GET] mine_block\n%!";
+  Logs.info ~func_name:"read_mempool" ~request:req ~req_type:"GET" ~time:(Unix.time ()); 
   let open Lwt.Syntax 
   in
   let* mempool = Storage.get_mempool ()
@@ -50,7 +52,7 @@ let read_mempool req =
 
 (* POST add_transaction *)
 let add_transaction req =
-  Printf.printf "[GET] mine_block\n%!";
+  Logs.info ~func_name:"add_transaction" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
   let response =
@@ -65,7 +67,7 @@ let add_transaction req =
 
 (* GET get_network *)
 let read_network req =
-  Printf.printf "[GET] mine_block\n%!";
+  Logs.info ~func_name:"read_network" ~request:req ~req_type:"GET" ~time:(Unix.time ()); 
   let open Lwt.Syntax 
   in
   let* network = Storage.get_network ()
@@ -78,23 +80,20 @@ let read_network req =
 
 (* POST add_node *)
 let add_node req =
-  Printf.printf "[GET] mine_block\n%!";
+  Logs.info ~func_name:"add_node" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
-  let response =
-    match Node.host_info_of_yojson json with
-    | Ok host -> host |> Storage.update_nodes 
-                      |> fun _ -> Response.of_json (Node.host_info_to_yojson host)
-                      |> Response.set_status `Created
-    | Error err -> err |> fun _ -> Response.of_json (`Assoc ["message", `String "Verify host syntax"])
-                       |> Response.set_status `Bad_request 
+  let response = Node.of_yojson json 
+                 |> Storage.replace_network 
+                 |> fun _ -> Response.of_json json
+                 |> Response.set_status `Created
   in
   Lwt.return response
 
 (* Setting the new node on network *)
 let start_node () =
   if not (Node.check_current_node_on_network (Lwt_main.run (Storage.get_network ())) this_node) 
-  then Storage.update_nodes this_node
+  then Protocol.update_nodes_on_network this_node
   else Lwt.return_unit
 
 (* App *)

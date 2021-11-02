@@ -10,3 +10,10 @@ let of_yojson json =
 
 let add_transaction mempool transaction =
   transaction :: mempool
+
+let five_transactions mempool =
+    [(List.nth mempool (Random.int (List.length mempool)));
+     (List.nth mempool (Random.int (List.length mempool)));
+     (List.nth mempool (Random.int (List.length mempool)));
+     (List.nth mempool (Random.int (List.length mempool)));
+     (List.nth mempool (Random.int (List.length mempool)))]

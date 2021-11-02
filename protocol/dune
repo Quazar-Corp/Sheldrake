@@ -1,4 +1,4 @@
 (library
   (name protocol)
-  (libraries node drake unix cohttp cohttp-lwt-unix)
+  (libraries database node drake unix opium )
   (preprocess (pps ppx_deriving_yojson)))

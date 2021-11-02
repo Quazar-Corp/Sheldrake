@@ -8,6 +8,9 @@ val (=) : host_info -> host_info -> bool
 (* External function to retrieve ip address with global scope *)
 external get_global_addr : unit -> string = "stub_get_global_addr"
 
+(* Due to lack of knownledge on type driven design *)
+val extract_type : t -> host_info list
+
 (* yojson generated function *)
 val host_info_of_yojson : Yojson.Safe.t -> (host_info, string) Result.result
 
