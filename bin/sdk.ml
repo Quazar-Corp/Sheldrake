@@ -17,7 +17,8 @@ let mine_block req =
   let new_block = 
     Chain.mine_block chain (Mempool.five_transactions mempool) 
   in
-  Protocol.update_chain_on_network this_node new_block 
+  Storage.insert_block new_block
+  |> fun _ -> Protocol.update_chain_on_network this_node
   |> fun _ -> req 
   |> fun _req -> Response.of_json (`Assoc ["message", `String "Successful mined!";
                                            "length", `Int ((Chain.length chain)+1)])
@@ -69,7 +70,8 @@ let add_transaction req =
   let* json = Request.to_json_exn req in
   let response =
     match Transaction.of_yojson json with
-    | Ok tx -> tx |> Protocol.update_mempool_on_network this_node
+    | Ok tx -> Storage.insert_transaction tx
+                  |> fun _ -> Protocol.update_mempool_on_network this_node
                   |> fun _ -> Response.of_json (Transaction.to_yojson tx)
                   |> Response.set_status `Created
     | Error err -> err |> fun _ -> Response.of_json (`Assoc ["message", `String "Verify the syntax and the name of fields!"])

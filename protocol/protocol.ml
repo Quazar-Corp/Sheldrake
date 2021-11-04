@@ -25,13 +25,10 @@ let update_nodes_on_network new_node =
   in
   aux (Node.extract_type updated_network)
 
-let update_chain_on_network current_node new_block =
-  Lwt_main.run (Storage.insert_block new_block);
+let update_chain_on_network current_node =
   let open Lwt.Syntax 
   in
   let* nodes = Storage.get_network ()
-  in
-  let open Lwt.Syntax
   in
   let* updated_chain = Storage.get_chain ()
   in
@@ -53,13 +50,10 @@ let update_chain_on_network current_node new_block =
   in
   aux (Node.extract_type nodes)
 
-let update_mempool_on_network current_node new_transaction =
-  Lwt_main.run (Storage.insert_transaction new_transaction);
-  let open Lwt.Syntax 
+let update_mempool_on_network current_node =
+  let open Lwt.Syntax
   in
   let* nodes = Storage.get_network ()
-  in
-  let open Lwt.Syntax
   in
   let* updated_mempool = Storage.get_mempool ()
   in
