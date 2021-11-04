@@ -51,6 +51,7 @@ let update_chain_on_network current_node =
   aux (Node.extract_type nodes)
 
 let update_mempool_on_network current_node =
+  Printf.printf "ENTROU\n";
   let open Lwt.Syntax
   in
   let* nodes = Storage.get_network ()
