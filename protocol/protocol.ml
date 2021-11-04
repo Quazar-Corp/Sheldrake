@@ -1,4 +1,5 @@
 open Database
+open Drake
 
 let update_nodes_on_network new_node =
   Lwt_main.run (Storage.update_nodes new_node);
@@ -13,7 +14,9 @@ let update_nodes_on_network new_node =
   let rec aux = function
     | [] -> Lwt.return_unit
     | hd :: tl -> if hd = new_node then aux tl
-                  else Printf.printf "Sending request to http://%s:8333/blockchain/chain%!\n" (Node.addr hd) 
+                  else Printf.printf 
+                      "Sending request to update nodes to http://%s:8333/blockchain/node%!\n" 
+                      (Node.addr hd) 
                       |> fun () -> (Cohttp_lwt_unix.Client.post
                                    ?body:(Option.some (Cohttp_lwt.Body.of_string network_string))
                                    ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
@@ -22,9 +25,59 @@ let update_nodes_on_network new_node =
   in
   aux (Node.extract_type updated_network)
 
-let update_chain_on_network chain =
-  chain |> fun _ -> ()
+let update_chain_on_network current_node new_block =
+  Lwt_main.run (Storage.insert_block new_block);
+  let open Lwt.Syntax 
+  in
+  let* nodes = Storage.get_network ()
+  in
+  let open Lwt.Syntax
+  in
+  let* updated_chain = Storage.get_chain ()
+  in
+  let chain_string = Yojson.Safe.pretty_to_string (Chain.to_yojson updated_chain)
+  in
+  let client_addr = Node.addr current_node
+  in
+  let rec aux = function
+    | [] -> Lwt.return_unit 
+    | hd :: tl -> if hd = current_node then aux tl
+                  else Printf.printf 
+                      "Sending request to update chain to http://%s:8333/blockchain/block%!\n" 
+                      (Node.addr hd)
+                      |> fun () -> (Cohttp_lwt_unix.Client.post
+                                   ?body:(Option.some (Cohttp_lwt.Body.of_string chain_string))
+                                   ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
+                                   (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/block")))
+                      |> fun _ -> aux tl
+  in
+  aux (Node.extract_type nodes)
 
-let update_mempool_on_network mempool =
-  mempool |> fun _ -> ()
-  
+let update_mempool_on_network current_node new_transaction =
+  Lwt_main.run (Storage.insert_transaction new_transaction);
+  let open Lwt.Syntax 
+  in
+  let* nodes = Storage.get_network ()
+  in
+  let open Lwt.Syntax
+  in
+  let* updated_mempool = Storage.get_mempool ()
+  in
+  let mempool_string = Yojson.Safe.pretty_to_string (Mempool.to_yojson updated_mempool)
+  in
+  let client_addr = Node.addr current_node
+  in
+  let rec aux = function
+    | [] -> Lwt.return_unit 
+    | hd :: tl -> if hd = current_node then aux tl
+                  else Printf.printf 
+                      "Sending request to update mempool to http://%s:8333/blockchain/update%!\n" 
+                      (Node.addr hd)
+                      |> fun () -> (Cohttp_lwt_unix.Client.post
+                                   ?body:(Option.some (Cohttp_lwt.Body.of_string mempool_string))
+                                   ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
+                                   (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/update")))
+                      |> fun _ -> aux tl
+  in
+  aux (Node.extract_type nodes)
+ 

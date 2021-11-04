@@ -29,6 +29,14 @@ let insert_block block =
       in
       Lwt_io.write output_channel chain_string)
 
+(* REPLACE Chain *)
+let replace_chain chain =
+  Lwt_io.with_file ~mode:Output chain_table (fun output_channel ->
+      let chain_string =
+        chain |> Chain.to_yojson |> Yojson.Safe.pretty_to_string
+      in
+      Lwt_io.write output_channel chain_string)
+
 (* READ mempool *)
 let get_mempool () =
   Lwt_io.with_file ~mode:Input mempool_table (fun input_channel ->
@@ -50,6 +58,14 @@ let insert_transaction tx =
   Lwt_io.with_file ~mode:Output mempool_table (fun output_channel ->
       let mempool_string =
         updated_mempool |> Mempool.to_yojson |> Yojson.Safe.pretty_to_string
+      in
+      Lwt_io.write output_channel mempool_string)
+
+(* REPLACE Chain *)
+let replace_mempool mempool =
+  Lwt_io.with_file ~mode:Output mempool_table (fun output_channel ->
+      let mempool_string =
+        mempool |> Mempool.to_yojson |> Yojson.Safe.pretty_to_string
       in
       Lwt_io.write output_channel mempool_string)
 
@@ -77,7 +93,7 @@ let update_nodes node =
       in
       Lwt_io.write output_channel network_string)
 
-(* CREATE Node *)
+(* REPLACE Network *)
 let replace_network network =
   Lwt_io.with_file ~mode:Output node_table (fun output_channel ->
       let network_string =

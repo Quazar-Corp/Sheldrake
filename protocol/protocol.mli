@@ -4,7 +4,7 @@ open Drake
 val update_nodes_on_network : Node.host_info -> unit Lwt.t
 
 (* Share to the network the new chain *)
-val update_chain_on_network : 'a list -> unit
+val update_chain_on_network : Node.host_info -> Block.t -> unit Lwt.t
 
 (* Share to the network the new mempool *)
-val update_mempool_on_network : Mempool.t -> unit
+val update_mempool_on_network : Node.host_info -> Transaction.t -> unit Lwt.t

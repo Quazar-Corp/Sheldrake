@@ -17,12 +17,24 @@ let mine_block req =
   let new_block = 
     Chain.mine_block chain (Mempool.five_transactions mempool) 
   in
-  Storage.insert_block new_block 
+  Protocol.update_chain_on_network this_node new_block 
   |> fun _ -> req 
   |> fun _req -> Response.of_json (`Assoc ["message", `String "Successful mined!";
                                            "length", `Int ((Chain.length chain)+1)])
   |> Response.set_status `Created
   |> Lwt.return
+
+(* POST add_block *)
+let add_block req =
+  Logs.info ~func_name:"add_block" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
+  let open Lwt.Syntax in
+  let* json = Request.to_json_exn req in
+  let response = Chain.of_yojson json 
+                 |> Storage.replace_chain
+                 |> fun _ -> Response.of_json json
+                 |> Response.set_status `Created
+  in
+  Lwt.return response
   
 (* GET get_chain *)
 let read_chain req =
@@ -57,11 +69,23 @@ let add_transaction req =
   let* json = Request.to_json_exn req in
   let response =
     match Transaction.of_yojson json with
-    | Ok tx -> tx |> Storage.insert_transaction 
+    | Ok tx -> tx |> Protocol.update_mempool_on_network this_node
                   |> fun _ -> Response.of_json (Transaction.to_yojson tx)
                   |> Response.set_status `Created
     | Error err -> err |> fun _ -> Response.of_json (`Assoc ["message", `String "Verify the syntax and the name of fields!"])
                        |> Response.set_status `Bad_request 
+  in
+  Lwt.return response
+
+(* POST update_mempool *)
+let update_mempool req =
+  Logs.info ~func_name:"update_mempool" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
+  let open Lwt.Syntax in
+  let* json = Request.to_json_exn req in
+  let response = Mempool.of_yojson json 
+                 |> Storage.replace_mempool
+                 |> fun _ -> Response.of_json json
+                 |> Response.set_status `Created
   in
   Lwt.return response
 
@@ -103,11 +127,13 @@ let _ =
   |> App.host (Node.addr this_node)
   |> App.port 8333
   |> App.get "/blockchain/mine" mine_block
+  |> App.post "/blockchain/block" add_block
   |> App.get "/blockchain/chain" read_chain
   |> App.get "/blockchain/mempool" read_mempool
   |> App.post "/blockchain/transaction" add_transaction
-  |> App.get "/blockchain/network" read_network
+  |> App.post "/blockchain/update" update_mempool
   |> App.post "/blockchain/node" add_node
+  |> App.get "/blockchain/network" read_network
   |> App.run_command
 
 
