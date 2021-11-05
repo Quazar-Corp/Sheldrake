@@ -17,10 +17,13 @@ let update_nodes_on_network new_node =
                   else Printf.printf 
                       "Sending request to update nodes to http://%s:8333/blockchain/node%!\n" 
                       (Node.addr hd) 
-                      |> fun () -> (Cohttp_lwt_unix.Client.post
+                      |> fun () -> let* req = (Cohttp_lwt_unix.Client.post
                                    ?body:(Option.some (Cohttp_lwt.Body.of_string network_string))
                                    ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/node")))
+                                   in
+                                   req
+                      |> fun (resp, body) -> resp |> fun _ -> Cohttp_lwt.Body.drain_body body 
                       |> fun _ -> aux tl
   in
   aux (Node.extract_type updated_network)
@@ -42,10 +45,13 @@ let update_chain_on_network current_node =
                   else Printf.printf 
                       "Sending request to update chain to http://%s:8333/blockchain/block%!\n" 
                       (Node.addr hd)
-                      |> fun () -> (Cohttp_lwt_unix.Client.post
+                      |> fun () -> let* req = (Cohttp_lwt_unix.Client.post
                                    ?body:(Option.some (Cohttp_lwt.Body.of_string chain_string))
                                    ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/block")))
+                                   in
+                                   req
+                      |> fun (resp, body) -> resp |> fun _ -> Cohttp_lwt.Body.drain_body body 
                       |> fun _ -> aux tl
   in
   aux (Node.extract_type nodes)
@@ -67,10 +73,13 @@ let update_mempool_on_network current_node =
                   else Printf.printf 
                       "Sending request to update mempool to http://%s:8333/blockchain/update%!\n" 
                       (Node.addr hd)
-                      |> fun () -> (Cohttp_lwt_unix.Client.post
+                      |> fun () -> let* req = (Cohttp_lwt_unix.Client.post
                                    ?body:(Option.some (Cohttp_lwt.Body.of_string mempool_string))
                                    ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/update")))
+                                   in
+                                   req
+                      |> fun (resp, body) -> resp |> fun _ -> Cohttp_lwt.Body.drain_body body 
                       |> fun _ -> aux tl
   in
   aux (Node.extract_type nodes)
