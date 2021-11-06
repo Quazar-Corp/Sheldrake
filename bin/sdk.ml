@@ -136,6 +136,6 @@ let _ =
   |> App.post "/blockchain/update" update_mempool
   |> App.post "/blockchain/node" add_node
   |> App.get "/blockchain/network" read_network
-  |> App.run_multicore
+  |> App.run_command 
 
 
