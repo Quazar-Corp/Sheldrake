@@ -33,22 +33,19 @@ let update_chain_on_network current_node =
   in
   let* nodes = Storage.get_network ()
   in
-  let* updated_chain = Storage.get_chain () |> fun chain -> Printf.printf "RECUPERADO CHAIN\n%!"; chain
+  let* updated_chain = Storage.get_chain ()
   in
-  let chain_string chain = Yojson.Safe.pretty_to_string (Chain.to_yojson chain)
-  in
-  let client_addr = Node.addr current_node |> fun add -> Printf.printf "RECUPERADO ADDR\n%!"; add
+  let client_addr = Node.addr current_node
   in
   let rec aux ls =
-    Printf.printf "AMÉMMAMIGO\n%!";
     match ls with
-    | [] -> Printf.printf "RETORNOU UNIT\n%!" |> fun () -> Lwt.return_unit 
+    | [] -> Lwt.return_unit 
     | hd :: tl -> if hd = current_node then aux tl
                   else Printf.printf 
                       "Sending request to update chain to http://%s:8333/blockchain/block%!\n" 
                       (Node.addr hd)
                       |> fun () -> let* req = (Cohttp_lwt_unix.Client.post
-                                   ?body:(Option.some (Cohttp_lwt.Body.of_string (chain_string updated_chain)))
+                                   ?body:(Option.some (Cohttp_lwt.Body.of_string (Yojson.Safe.pretty_to_string (Chain.to_yojson updated_chain))))
                                    ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ())  "Client" client_addr))
                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/block")))
                                    in
@@ -56,8 +53,7 @@ let update_chain_on_network current_node =
                       |> fun (resp, body) -> resp |> fun _ -> Cohttp_lwt.Body.drain_body body 
                       |> fun _ -> aux tl
   in
-  Printf.printf "MISTERIO\n%!"; aux (Node.extract_type nodes) 
-  |> fun ret -> Printf.printf "CARAIBIXO\n%!"; ret
+  aux (Node.extract_type nodes) 
 
 let update_mempool_on_network current_node =
   let open Lwt.Syntax
