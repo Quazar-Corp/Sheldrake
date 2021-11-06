@@ -3,10 +3,12 @@ open Drake
 type t = Block.t list
 
 let to_yojson chain =
-  Block.list_to_yojson chain
+  [%to_yojson: Block.t list] chain
 
 let of_yojson json =
-  Block.list_of_yojson json
+  match [%of_yojson: Block.t list] json with
+    | Ok chain -> chain
+    | Error err -> err |> fun _ -> raise Parsing.Parse_error
 
 let target = 4
 
