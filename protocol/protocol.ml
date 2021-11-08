@@ -91,7 +91,7 @@ let consensus_update_chain current_node to_verify =
   let client_addr = Node.addr current_node
   in
   let rec aux count = function
-    | [] -> if count > ((List.length (Node.extract_list nodes)))/2 then Lwt.return_true else Lwt.return_false
+    | [] -> if count >= ((List.length (Node.extract_list nodes)))/2 then Lwt.return_true else Lwt.return_false
     | hd :: tl -> if hd = current_node then aux (count+1) tl
                   else Printf.printf 
                        "Sending request to verify the update on chain in http://%s:8333/blockchain/chain\n%!"
@@ -114,7 +114,7 @@ let consensus_update_nodes current_node to_verify =
   let client_addr = Node.addr current_node
   in
   let rec aux count = function
-    | [] -> if count > ((List.length (Node.extract_list nodes)))/2 then Lwt.return_true else Lwt.return_false
+    | [] -> if count >= ((List.length (Node.extract_list nodes)))/2 then Lwt.return_true else Lwt.return_false
     | hd :: tl -> if hd = current_node then aux (count+1) tl
                   else Printf.printf 
                        "Sending request to verify the update on nodes in http://%s:8333/blockchain/network\n%!"
@@ -138,7 +138,7 @@ let consensus_update_mempool current_node to_verify =
   let client_addr = Node.addr current_node
   in
   let rec aux count = function
-    | [] -> if count > ((List.length (Node.extract_list nodes)))/2 then Lwt.return_true else Lwt.return_false
+    | [] -> if count >= ((List.length (Node.extract_list nodes)))/2 then Lwt.return_true else Lwt.return_false
     | hd :: tl -> if hd = current_node then aux (count+1) tl
                   else Printf.printf 
                        "Sending request to verify the update on mempool in http://%s:8333/blockchain/mempool\n%!"
