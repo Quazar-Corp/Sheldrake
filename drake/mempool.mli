@@ -6,6 +6,9 @@ val to_yojson : t -> Yojson.Safe.t
 (* Decode from json *)
 val of_yojson : Yojson.Safe.t -> t
 
+(* Mempool length *)
+val length : t -> int
+
 (* Add a transaction *)
 val add_transaction : t -> Transaction.t -> t
 

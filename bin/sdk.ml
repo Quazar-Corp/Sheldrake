@@ -28,14 +28,20 @@ let mine_block req =
 (* POST add_block *)
 let add_block req =
   Logs.info ~func_name:"add_block" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
-  let open Lwt.Syntax in
-  let* json = Request.to_json_exn req in
-  let response = Chain.of_yojson json 
-                 |> Storage.replace_chain
-                 |> fun _ -> Response.of_json json
-                 |> Response.set_status `Created
+  let open Lwt.Syntax 
   in
-  Lwt.return response
+  let* json = Request.to_json_exn req 
+  in
+  let updated = Chain.of_yojson json
+  in
+  let* flag = Protocol.consensus_update_chain this_node updated 
+  in
+  let response = if flag then Storage.replace_chain updated |> fun _ -> Response.of_json json
+                              |> Response.set_status `Created
+                 else Response.of_json (`Assoc ["message", `String "Not accepted"])
+                      |> Response.set_status `Not_acceptable
+  in
+  Lwt.return response 
   
 (* GET get_chain *)
 let read_chain req =
@@ -82,14 +88,20 @@ let add_transaction req =
 (* POST update_mempool *)
 let update_mempool req =
   Logs.info ~func_name:"update_mempool" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
-  let open Lwt.Syntax in
-  let* json = Request.to_json_exn req in
-  let response = Mempool.of_yojson json 
-                 |> Storage.replace_mempool
-                 |> fun _ -> Response.of_json json
-                 |> Response.set_status `Created
+  let open Lwt.Syntax 
   in
-  Lwt.return response
+  let* json = Request.to_json_exn req 
+  in
+  let updated = Mempool.of_yojson json
+  in
+  let* flag = Protocol.consensus_update_mempool this_node updated 
+  in
+  let response = if flag then Storage.replace_mempool updated |> fun _ -> Response.of_json json
+                              |> Response.set_status `Created
+                 else Response.of_json (`Assoc ["message", `String "Not accepted"])
+                      |> Response.set_status `Not_acceptable
+  in
+  Lwt.return response 
 
 (* GET get_network *)
 let read_network req =
@@ -107,14 +119,20 @@ let read_network req =
 (* POST add_node *)
 let add_node req =
   Logs.info ~func_name:"add_node" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 
-  let open Lwt.Syntax in
-  let* json = Request.to_json_exn req in
-  let response = Node.of_yojson json 
-                 |> Storage.replace_network 
-                 |> fun _ -> Response.of_json json
-                 |> Response.set_status `Created
+  let open Lwt.Syntax 
   in
-  Lwt.return response
+  let* json = Request.to_json_exn req 
+  in
+  let updated = Node.of_yojson json
+  in
+  let* flag = Protocol.consensus_update_nodes this_node updated 
+  in
+  let response = if flag then Storage.replace_network updated |> fun _ -> Response.of_json json
+                              |> Response.set_status `Created
+                 else Response.of_json (`Assoc ["message", `String "Not accepted"])
+                      |> Response.set_status `Not_acceptable
+  in
+  Lwt.return response 
 
 (* Setting the new node on network *)
 let start_node () =

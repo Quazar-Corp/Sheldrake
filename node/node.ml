@@ -17,6 +17,9 @@ let (=) host_1 host_2 =
 let extract_list network =
   network
 
+let length network =
+  List.length network
+
 external get_global_addr : unit -> string = "stub_get_global_addr"
 
 let of_yojson json =

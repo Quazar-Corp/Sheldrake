@@ -8,6 +8,9 @@ let of_yojson json =
     | Ok mempool -> mempool
     | Error err -> err |> fun _ -> raise Parsing.Parse_error 
 
+let length mempool =
+  List.length mempool
+
 let add_transaction mempool transaction =
   transaction :: mempool
 

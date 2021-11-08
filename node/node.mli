@@ -8,6 +8,9 @@ val (=) : host_info -> host_info -> bool
 (* External function to retrieve ip address with global scope *)
 external get_global_addr : unit -> string = "stub_get_global_addr"
 
+(* Network length *)
+val length : t -> int
+
 (* Due to lack of knownledge on type driven design *)
 val extract_list : t -> host_info list
 
