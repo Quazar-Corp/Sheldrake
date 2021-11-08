@@ -95,10 +95,10 @@ let consensus_update_chain current_node to_verify =
     | hd :: tl -> if hd = current_node then aux (count+1) tl
                   else Printf.printf 
                        "Sending request to verify the update on chain in http://%s:8333/blockchain/chain\n%!"
-                       client_addr
+                       (Node.addr hd)
                        |> fun () -> let* req = (Cohttp_lwt_unix.Client.get
                                     ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ()) "Client" client_addr))
-                                    (Uri.of_string ("http://" ^ client_addr ^ ":8333/blockchain/chain")))
+                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/chain")))
                                     in
                                     req
                        |> fun (resp, body) -> resp |> fun _ -> let* str_body = Cohttp_lwt.Body.to_string body in Chain.of_yojson (Yojson.Safe.from_string str_body)
@@ -118,10 +118,10 @@ let consensus_update_nodes current_node to_verify =
     | hd :: tl -> if hd = current_node then aux (count+1) tl
                   else Printf.printf 
                        "Sending request to verify the update on nodes in http://%s:8333/blockchain/network\n%!"
-                       client_addr
+                       (Node.addr hd)
                        |> fun () -> let* req = (Cohttp_lwt_unix.Client.get
                                     ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ()) "Client" client_addr))
-                                    (Uri.of_string ("http://" ^ client_addr ^ ":8333/blockchain/network")))
+                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/network")))
                                     in
                                     req
                        |> fun (resp, body) -> resp |> fun _ -> let* str_body = Cohttp_lwt.Body.to_string body in Node.of_yojson (Yojson.Safe.from_string str_body)
@@ -142,10 +142,10 @@ let consensus_update_mempool current_node to_verify =
     | hd :: tl -> if hd = current_node then aux (count+1) tl
                   else Printf.printf 
                        "Sending request to verify the update on mempool in http://%s:8333/blockchain/mempool\n%!"
-                       client_addr
+                       (Node.addr hd)
                        |> fun () -> let* req = (Cohttp_lwt_unix.Client.get
                                     ?headers:(Option.some (Cohttp.Header.add (Cohttp.Header.init ()) "Client" client_addr))
-                                    (Uri.of_string ("http://" ^ client_addr ^ ":8333/blockchain/mempool")))
+                                    (Uri.of_string ("http://" ^ (Node.addr hd) ^ ":8333/blockchain/mempool")))
                                     in
                                     req
                        |> fun (resp, body) -> resp |> fun _ -> let* str_body = Cohttp_lwt.Body.to_string body in Mempool.of_yojson (Yojson.Safe.from_string str_body)
