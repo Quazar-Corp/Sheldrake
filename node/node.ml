@@ -14,7 +14,7 @@ let (=) host_1 host_2 =
   in
   if name && address then true else false
 
-let extract_type network =
+let extract_list network =
   network
 
 external get_global_addr : unit -> string = "stub_get_global_addr"
