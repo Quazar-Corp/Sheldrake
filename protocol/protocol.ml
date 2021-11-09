@@ -33,9 +33,9 @@ let update_chain_on_network current_node =
   in
   let* nodes = Storage.get_network ()
   in
-  let* updated_chain = Storage.get_chain ()
+  let* updated_chain = Storage.get_chain () 
   in
-  let client_addr = Node.addr current_node
+  let client_addr = Node.addr current_node 
   in
   let rec aux ls =
     match ls with
