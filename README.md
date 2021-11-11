@@ -9,6 +9,8 @@ Sheldrake is a blockchain demo network that implements a cryptocurrency(first ge
 - [ ] Real database integration
 - [ ] Smart contract
 - [ ] Optimize client side
+- [ ] Increase test coverage
+- [ ] CI
 
 ## Limitations
 
