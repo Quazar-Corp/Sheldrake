@@ -1,4 +1,4 @@
-# Project Sheldrake
+# Sheldrake
 
 ## About
 Sheldrake is a blockchain demo network that implements a cryptocurrency(first generation) example without smart contracts, sidechain and a wallet. The main motivation was practice ocaml, functional paradigm, blockchain concepts and decentralized applications.
