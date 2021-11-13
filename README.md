@@ -9,10 +9,16 @@ Sheldrake is a blockchain demo network that implements a cryptocurrency(first ge
 - GCC 11.1.0
 
 ## Compile and Run
+
+On root
 ```bash
  $ dune build
 ```
-
+to compile and
+```bash
+$ dune exec sheldrake
+```
+to run
 ## TODO List
 - [ ] Improve error handling
 - [ ] Multi-threads(Concurrency)
