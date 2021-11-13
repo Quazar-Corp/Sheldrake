@@ -23,7 +23,7 @@ to run.
 ### How to run properly
  - You'll need to change the port and execute in different terminals to check the requests working between executions.
  - If you have more than one machine you can try to execute in each one and see the requests with server side logs(it's printed in every request).
- - You can just execute one instance and test the endpoint with something like postman.
+ - You can just execute one instance and test the endpoints with something like postman.
  
 ## TODO List
 - [ ] Improve error handling
