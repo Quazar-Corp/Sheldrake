@@ -14,7 +14,7 @@ On root
 ```bash
  $ dune build
 ```
-to compile(Maybe some warnings are raised in macOS) and
+to compile(some warnings due to C interfaced code) and
 ```bash
 $ dune exec sheldrake
 ```
