@@ -1,7 +1,7 @@
 # Sheldrake
 
 ## About
-Sheldrake is a blockchain demo network that implements a cryptocurrency(first generation) example without smart contracts, sidechain and a wallet. The main motivation was practice ocaml, functional paradigm, blockchain concepts and decentralized applications.
+Sheldrake is a blockchain demo network that implements a cryptocurrency(first generation) example without smart contracts, sidechain and a wallet. The main motivation was practice ocaml, functional programming, blockchain concepts and decentralized applications.
 
 ## Dependencies
 - OCaml 4.12.0
@@ -18,7 +18,13 @@ to compile(some warnings due to C interfaced code) and
 ```bash
 $ dune exec sheldrake
 ```
-to run
+to run.
+
+### How to run properly
+ - You'll need to change the port and execute in differents terminals to check the requests working between executions.
+ - If you have more than one machine you can try to execute in each one and see the requests with server side logs(it's printed in every request).
+ - You can just execute one instance and test the endpoint with something like postman.
+ 
 ## TODO List
 - [ ] Improve error handling
 - [ ] Multi-threads(Concurrency)
