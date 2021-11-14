@@ -1,7 +1,7 @@
 # Sheldrake
 
 ## About
-Sheldrake is a blockchain demo network that implements a cryptocurrency(first generation) example without smart contracts, sidechain and a wallet. The main motivation was practice ocaml, functional programming, blockchain concepts and decentralized applications.
+Sheldrake is a blockchain demo network that implements a cryptocurrency(first generation) example without a merkle tree, smart contracts, sidechain and a wallet. The main motivation was practice ocaml, functional programming, blockchain concepts and decentralized applications.
 
 ## Dependencies
 - OCaml 4.12.0
