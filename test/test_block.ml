@@ -1,4 +1,3 @@
-(*
 open Drake
 open Alcotest
 
@@ -19,29 +18,27 @@ let block_3 = Block.create
                 ~transactions:[(Transaction.create "Pelicans" "Bulls" 54000000.)]
                 ~prev_hash:(Block.get_hash block_2)
 
-let mocked_chain = [block_1; block_2; block_3]
-
-let mocked_json = [%to_yojson: Block.t list] mocked_chain
-
 (* ACT *)
 
-let test_json_to_block_list () =
+let test_json_to_block () =
   (check bool) "JSON Encode" true (Yojson.Safe.equal
-                                     mocked_json
-                                     (Block.list_to_yojson mocked_chain))
+                                     ([%to_yojson: Block.t] block_1)
+                                     (Block.to_yojson block_1))
 
-let test_block_list_to_json () =
-  (check bool) "JSON Decode" true (List.equal
-                                     (fun a b -> if a = b then true else false)
-                                     mocked_chain
-                                     (Block.list_of_yojson mocked_json))
+let test_block_to_json () =
+  (check int) "JSON Decode" 0 (String.compare 
+                                     (Block.get_hash (match [%of_yojson: Block.t] ([%to_yojson: Block.t] block_2) with
+                                                        | Ok block -> block
+                                                        | Error err -> err |> raise Parsing.Parse_error))
+                                     (Block.get_hash (match Block.of_yojson ([%to_yojson: Block.t] block_2) with
+                                                        | Ok block -> block
+                                                        | Error err -> err |> raise Parsing.Parse_error)))
 
 (* ASSERT *)
 let () =
-  run "Block" [
+  run "Isolated Block's test" [
       "JSON Convert", [
-          test_case "Chain to JSON" `Quick test_json_to_block_list;
-          test_case "JSON to Chain" `Quick test_block_list_to_json;
+          test_case "JSON to Block" `Quick test_json_to_block;
+          test_case "Block to JSON" `Quick test_block_to_json;
         ];
     ]
-*)
