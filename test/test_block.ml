@@ -34,6 +34,10 @@ let test_block_to_json () =
                                                         | Ok block -> block
                                                         | Error err -> err |> raise Parsing.Parse_error)))
 
+let test_get_hash () =
+  (check string) "Retrieve Hash" "0000000000000000000000000000000000000000000000000000000000000000"
+                 (Block.get_hash block_1)
+
 (* ASSERT *)
 let () =
   run "Isolated Block's test" [
