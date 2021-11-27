@@ -8,6 +8,11 @@ let block_1 = Block.create
                 ~transactions:[(Transaction.create "Cavaliers" "Lakers" 54000000.)]
                 ~prev_hash:"0000000000000000000000000000000000000000000000000000000000000000"
 
+let block_1_hash = let block_str = Block.to_string block_1
+                   in
+                   Block.update_hash block_1 (Sha256.to_hex (Sha256.string block_str)) 
+                   |> fun () -> Block.get_hash block_1
+
 let block_2 = Block.create 
                 ~nonce:(Block.get_nonce block_1)
                 ~transactions:[(Transaction.create "Golden State Warriors" "Nets" 54000000.)]
@@ -35,8 +40,7 @@ let test_block_to_json () =
                                                         | Error err -> err |> raise Parsing.Parse_error)))
 
 let test_get_hash () =
-  (check string) "Retrieve Hash" "0000000000000000000000000000000000000000000000000000000000000000"
-                 (Block.get_hash block_1)
+  (check string) "Retrieve Hash" block_1_hash (Block.get_hash block_1)
 
 (* ASSERT *)
 let () =
@@ -44,5 +48,6 @@ let () =
       "JSON Convert", [
           test_case "JSON to Block" `Quick test_json_to_block;
           test_case "Block to JSON" `Quick test_block_to_json;
+          test_case "Retrieve the correct Hash" `Quick test_get_hash;
         ];
     ]
