@@ -24,7 +24,7 @@ let block_3 = Block.create
                 ~prev_hash:(Block.get_hash block_2)
 
 (* ACT *)
-
+(* Jsonfy test  *)
 let test_json_to_block () =
   (check bool) "JSON Encode" true (Yojson.Safe.equal
                                      ([%to_yojson: Block.t] block_1)
@@ -38,9 +38,15 @@ let test_block_to_json () =
                                      (Block.get_hash (match Block.of_yojson ([%to_yojson: Block.t] block_2) with
                                                         | Ok block -> block
                                                         | Error err -> err |> raise Parsing.Parse_error)))
-
+(* Retrieve hash test *)
 let test_get_hash () =
   (check string) "Retrieve Hash" block_1_hash (Block.get_hash block_1)
+
+(* Update hash test *)
+let test_update_hash () =
+  (check int) "Update Hash" 1 (String.compare
+                                 block_1_hash
+                                 (Block.get_hash (Block.update_hash block_1 "123456" |> fun () -> block_1)))
 
 (* ASSERT *)
 let () =
@@ -48,6 +54,9 @@ let () =
       "JSON Convert", [
           test_case "JSON to Block" `Quick test_json_to_block;
           test_case "Block to JSON" `Quick test_block_to_json;
+      ];
+      "HASH Operations", [
           test_case "Retrieve the correct Hash" `Quick test_get_hash;
-        ];
+          test_case "Update Hash" `Quick test_update_hash;
+      ];
     ]
