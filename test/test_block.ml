@@ -13,6 +13,11 @@ let block_1_hash = let block_str = Block.to_string block_1
                    Block.update_hash block_1 (Sha256.to_hex (Sha256.string block_str)) 
                    |> fun () -> Block.get_hash block_1
 
+let block_created = Block.create
+                      ~nonce:000000
+                      ~transactions:[(Transaction.create "Sender" "Receiver" 10000.)]
+                      ~prev_hash:"0000000"
+
 let block_2 = Block.create 
                 ~nonce:(Block.get_nonce block_1)
                 ~transactions:[(Transaction.create "Golden State Warriors" "Nets" 54000000.)]
@@ -48,9 +53,21 @@ let test_update_hash () =
                                  block_1_hash
                                  (Block.get_hash (Block.update_hash block_1 "123456" |> fun () -> block_1)))
 
+(* Create block test *)
+let test_create () =
+  (check int) "Create Block" 0 (String.compare
+                                    (Block.to_string block_created)
+                                    (Block.to_string( Block.create
+                                      ~nonce:000000
+                                      ~transactions:[(Transaction.create "Sender" "Receiver" 10000.)]
+                                      ~prev_hash:"0000000")))
+
 (* ASSERT *)
 let () =
-  run "Isolated Block's test" [
+  run "Block's test" [
+      "BLOCK Create", [
+          test_case "Create Block Purity" `Quick test_create;
+      ];
       "JSON Convert", [
           test_case "JSON to Block" `Quick test_json_to_block;
           test_case "Block to JSON" `Quick test_block_to_json;
