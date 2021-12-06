@@ -1,9 +1,10 @@
 (* Block type *)
 (* Serializable record *)
 type t = {
-  mutable block_index : int;
+  mutable index : int;
   timestamp : string;
   nonce : int;
+  merkle_root : string;
   transactions : Transaction.t list;
   prev_hash : string;
   mutable hash : string;
@@ -13,12 +14,15 @@ type t = {
 let create ~nonce ~transactions ~prev_hash =
   let timestamp = Float.to_string (Unix.time ())
   in
-  {block_index=0; timestamp=timestamp; nonce=nonce; 
-   transactions=transactions; prev_hash=prev_hash; hash=""}
+  let merkle_root = String.init 64 (fun _ -> '0')
+  in
+  {index=0; timestamp=timestamp; nonce=nonce; 
+   merkle_root=merkle_root; transactions=transactions; 
+   prev_hash=prev_hash; hash=""}
 
 (* Update index with the current position in chain *)
 let update_index block idx =
-  block.block_index <- idx;
+  block.index <- idx;
   ()
 
 (* In case the fingerprint changes(avalanche effect) *)
@@ -44,9 +48,10 @@ let valid_crypto prev curr =
 
 (* String representation of the block *)
 let to_string block =
-  (Int.to_string block.block_index) ^ " " ^
+  (Int.to_string block.index) ^ " " ^
   block.timestamp  ^ " " ^
   (Int.to_string block.nonce) ^ " " ^
+  block.merkle_root ^ " " ^
   block.prev_hash  ^ " " 
 
 (* Transaction list to string *)
