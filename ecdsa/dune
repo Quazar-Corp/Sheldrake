@@ -1,0 +1,4 @@
+(library
+  (name ecdsa)
+  (libraries sha uuidm)
+  (preprocess (pps ppx_deriving_yojson)))
