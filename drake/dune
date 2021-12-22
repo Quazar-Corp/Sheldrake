@@ -1,4 +1,4 @@
 (library
   (name drake)
-  (libraries unix)
+  (libraries unix crypto)
   (preprocess (pps ppx_deriving_yojson)))

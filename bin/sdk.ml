@@ -3,8 +3,8 @@ open Database
 open Opium
 
 (* Current node info *)
-let this_node = Node.retrieve_host_entries
-    
+let this_node = Node.retrieve_host_entries    
+
 (* GET mine_block *)
 let mine_block req =
   Logs.info ~func_name:"mine_block" ~request:req ~req_type:"GET" ~time:(Unix.time ()); 
