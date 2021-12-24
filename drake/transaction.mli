@@ -11,3 +11,7 @@ val create : sender:string -> recipient:string -> amount:float -> key:string -> 
 
 (* sign ~transaction ~private_key *)
 val sign : t -> string -> unit
+
+(* Generate the hash of the merkle root *)
+val calculate_merkle_root : t list -> string
+
