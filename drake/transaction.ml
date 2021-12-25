@@ -30,5 +30,8 @@ let calculate_merkle_root txs =
                                                          |> fun str -> [str]                              
                       else List.map (fun tx -> Sha256.to_hex (Sha256.string (to_string tx))) txs
   in
-  list_of_hashs |> fun _ -> "Need to study merkle tree"
+  let list_of_lens = if (List.length list_of_hashs) mod 2 = 0 then List.length list_of_hashs
+                     else List.length (list_of_hashs @ [List.hd (List.rev list_of_hashs)])
+  in
+  list_of_hashs |> fun _ -> list_of_lens |> fun _ -> "Need to study merkle tree"
 
