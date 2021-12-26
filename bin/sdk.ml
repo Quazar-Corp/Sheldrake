@@ -85,6 +85,22 @@ let add_transaction req =
   in
   Lwt.return response
 
+(* Mocked transaction to tests purposes *)
+type m_tx = {
+  sender : string;
+  receiver : string;
+  amount : float;
+}[@@deriving yojson]
+(* POST generate_transaction *)
+let generate_transaction req =
+  Logs.info ~func_name:"generate_transaction" ~request:req ~req_type:"POST" ~time:(Unix.time ());
+  let open Lwt.Syntax in
+  let *json = Request.to_json_exn req in
+  let response =
+    match m_tx_of_yojson with
+    | Ok mtx -> Crypto.generate_keys 
+                |> fun (pub, priv) -> 
+
 (* POST update_mempool *)
 let update_mempool req =
   Logs.info ~func_name:"update_mempool" ~request:req ~req_type:"POST" ~time:(Unix.time ()); 

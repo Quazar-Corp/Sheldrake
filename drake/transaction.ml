@@ -15,7 +15,7 @@ let to_string tx =
 let create ~sender ~recipient ~amount ~key =
   {sender=sender; recipient=recipient; amount=amount; 
    timestamp=(Float.to_string (Unix.time ())); 
-   key=key; signature=""}
+   key=(Crypto.pub_of_priv key); signature=""}
 
 let sign tx key =
   let signature = Crypto.sign ~message:(to_string tx) ~key:key
