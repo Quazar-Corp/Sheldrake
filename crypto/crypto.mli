@@ -11,6 +11,9 @@ val pub_to_string : Dsa.pub -> string
 (* Generate a fresh pair of keys -> encoded in base64 from their Sexpr *)
 val generate_keys : unit -> string * string
 
+(* Retrieve the public key from the private key *)
+val pub_of_priv : string -> string
+
 (* Sign the message and returns the signature -> Base64 encoded (r + " " + s) *)
 val sign : message:string -> key:string -> string
 

@@ -2,6 +2,8 @@ open Drake
 open Database
 open Opium
 
+let () = Mirage_crypto_rng_unix.initialize ()
+
 (* Current node info *)
 let this_node = Node.retrieve_host_entries    
 
@@ -88,18 +90,26 @@ let add_transaction req =
 (* Mocked transaction to tests purposes *)
 type m_tx = {
   sender : string;
-  receiver : string;
+  recipient : string;
   amount : float;
 }[@@deriving yojson]
 (* POST generate_transaction *)
 let generate_transaction req =
   Logs.info ~func_name:"generate_transaction" ~request:req ~req_type:"POST" ~time:(Unix.time ());
   let open Lwt.Syntax in
-  let *json = Request.to_json_exn req in
+  let* json = Request.to_json_exn req in
   let response =
-    match m_tx_of_yojson with
-    | Ok mtx -> Crypto.generate_keys 
-                |> fun (pub, priv) -> 
+    match m_tx_of_yojson json with
+    | Ok mtx -> Crypto.generate_keys () 
+                |> fun (_, priv) -> Transaction.create ~sender:mtx.sender ~recipient:mtx.recipient
+                                                       ~amount:mtx.amount ~key:priv 
+                |> fun tx -> (Storage.insert_transaction tx, tx) 
+                |> fun (_, tx) -> Response.of_json (Transaction.to_yojson tx)
+                |> Response.set_status `Created
+    | Error _ -> Response.of_json (`Assoc ["message", `String "Something goes wrong..."])
+                |> Response.set_status `Bad_request
+  in
+  Lwt.return response
 
 (* POST update_mempool *)
 let update_mempool req =
@@ -167,9 +177,8 @@ let _ =
   |> App.get "/blockchain/chain" read_chain
   |> App.get "/blockchain/mempool" read_mempool
   |> App.post "/blockchain/transaction" add_transaction
+  |> App.post "/blockchain/mock_transaction" generate_transaction
   |> App.post "/blockchain/update" update_mempool
   |> App.post "/blockchain/node" add_node
   |> App.get "/blockchain/network" read_network
   |> App.run_command 
-
-

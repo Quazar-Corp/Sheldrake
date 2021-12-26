@@ -14,7 +14,7 @@ type t = {
 let create ~nonce ~transactions ~prev_hash =
   let timestamp = Float.to_string (Unix.time ())
   in
-  let merkle_root = String.init 64 (fun _ -> '0')
+  let merkle_root = Transaction.calculate_merkle_root transactions
   in
   {index=0; timestamp=timestamp; nonce=nonce; 
    merkle_root=merkle_root; transactions=transactions; 
