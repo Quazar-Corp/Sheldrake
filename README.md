@@ -26,6 +26,8 @@ to run.
  - You can just execute one instance and test the endpoints with something like postman.
  
 ## TODO List
+- [x] DSA(Key generation, Signature and Verification)
+- [x] Merkle root
 - [ ] Improve error handling
 - [ ] Multi-threads(Concurrency)
 - [ ] Real database integration
