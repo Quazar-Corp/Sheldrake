@@ -66,7 +66,9 @@ let chain_is_valid chain =
   in aux chain
 
 let mine_block chain transactions =
-  let nonce = (proof_of_work (Block.get_nonce (get_previous_block chain))) (* last block nonce *)
+  (* Verification to generate the genesis block *)
+  if List.length chain = 0 then Block.create ~nonce:0 ~transactions:[] ~prev_hash:(String.init 64 (fun _ -> '0'))
+  else let nonce = (proof_of_work (Block.get_nonce (get_previous_block chain))) (* last block nonce *)
   in
   let prev_hash = Block.get_hash (get_previous_block chain) (* last block hash *)
   in

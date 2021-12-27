@@ -1,24 +1,26 @@
 open Mirage_crypto_pk
 
 let priv_to_string (p, q, gg, x, y) =  
-  let key_str = (Z.to_string p) ^ " " ^
-                (Z.to_string q) ^ " " ^
-                (Z.to_string gg) ^ " " ^
-                (Z.to_string x) ^ " " ^
+  let key_str = (Z.to_string p) ^ "-" ^
+                (Z.to_string q) ^ "-" ^
+                (Z.to_string gg) ^ "-" ^
+                (Z.to_string x) ^ "-" ^
                 (Z.to_string y) 
   in
   Base64.encode_string key_str 
 
 let pub_to_string (p, q, gg, y) =
-  let key_str = (Z.to_string p) ^ " " ^
-                (Z.to_string q) ^ " " ^
-                (Z.to_string gg) ^ " " ^
+  let key_str = (Z.to_string p) ^ "-" ^
+                (Z.to_string q) ^ "-" ^
+                (Z.to_string gg) ^ "-" ^
                 (Z.to_string y) 
   in
-  Base64.encode_string key_str
+  Base64.encode_string key_str 
 
 let priv_of_string str =
-  let splitted_str = String.split_on_char ' ' str
+  let decoded_str = Base64.decode_exn str
+  in
+  let splitted_str = String.split_on_char '-' decoded_str
   in
   let p = List.nth splitted_str 0
   in
@@ -41,8 +43,9 @@ let priv_of_string str =
   | Error _ -> raise (Invalid_argument "Error on generation: private key")
 
 let pub_of_string str =
-  Printf.printf "pub of string\n%!";
-  let splitted_str = String.split_on_char ' ' str
+  let decoded_str = Base64.decode_exn str
+  in
+  let splitted_str = String.split_on_char '-' decoded_str
   in
   let p = List.nth splitted_str 0
   in

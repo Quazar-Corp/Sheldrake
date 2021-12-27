@@ -104,8 +104,8 @@ let generate_transaction req =
                 |> fun (_, priv) -> Transaction.create ~sender:mtx.sender ~recipient:mtx.recipient
                                                        ~amount:mtx.amount ~key:priv 
                 |> fun tx -> (Storage.insert_transaction tx, tx) 
-                |> fun (_, tx) -> Response.of_json (Transaction.to_yojson tx)
-                |> Response.set_status `Created
+                |> fun (_, tx) -> (Protocol.update_nodes_on_network this_node, Response.of_json (Transaction.to_yojson tx))
+                |> fun (_, resp) -> Response.set_status `Created resp
     | Error _ -> Response.of_json (`Assoc ["message", `String "Something goes wrong..."])
                 |> Response.set_status `Bad_request
   in
