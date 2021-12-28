@@ -47,3 +47,8 @@ let calculate_merkle_root txs =
   aux (List.length list_of_hashs) list_of_hashs 
   (*list_of_hashs |> fun _ -> list_of_lens |> fun _ -> "Need to study merkle tree"*)
 
+let is_valid tx =
+  if Crypto.verify_signature ~signature:tx.signature ~key:tx.key ~message:(to_string tx) then true
+  else false
+
+

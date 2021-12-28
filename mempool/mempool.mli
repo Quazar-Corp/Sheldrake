@@ -1,3 +1,5 @@
+open Drake
+
 type t
 
 (* Convert to json *)
@@ -14,4 +16,7 @@ val add_transaction : t -> Transaction.t -> t
 
 (* Visualization purposes -> get five random transactions *)
 val five_transactions : t -> Transaction.t list
+
+(* Verify the transactions in the mempool *)
+val is_valid : t -> bool
 

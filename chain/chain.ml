@@ -58,11 +58,12 @@ let proof_of_work prev_nonce =
   in
   aux (Random.int32 (Int32.of_int bound32int))
 
-let chain_is_valid chain =
+let is_valid chain =
   let rec aux = function
-    | [] | _ :: [] -> true (* end of the list *)
-    | prev :: (curr :: _ as tl) -> if (Block.valid_crypto prev curr) then aux tl
-      else false
+    | [] -> true (* end of the list *)
+    | [block] -> if Block.verify_merkle_root block then true else false
+    | prev :: (curr :: _ as tl) -> if (Block.valid_crypto prev curr) && Block.verify_merkle_root prev 
+      then aux tl else false
   in aux chain
 
 let mine_block chain transactions =

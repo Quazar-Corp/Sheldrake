@@ -15,3 +15,6 @@ val create : sender:string -> recipient:string -> amount:float -> key:string -> 
 (* Generate the hash of the merkle root *)
 val calculate_merkle_root : t list -> string
 
+(* Valid transaction = valid signature *)
+val is_valid : t -> bool
+

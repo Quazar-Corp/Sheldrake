@@ -1,5 +1,3 @@
-open Drake
-
 (* Share to the network the new node *)
 val update_nodes_on_network : Node.host_info -> unit Lwt.t
 

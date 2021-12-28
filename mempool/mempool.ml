@@ -1,3 +1,5 @@
+open Drake
+
 type t = Transaction.t list
 
 let to_yojson mempool =
@@ -20,3 +22,10 @@ let five_transactions mempool =
      (List.nth mempool (Random.int (List.length mempool)));
      (List.nth mempool (Random.int (List.length mempool)));
      (List.nth mempool (Random.int (List.length mempool)))]
+
+let is_valid mempool =
+  let rec aux = function 
+    | [] -> true
+    | hd :: tl -> if not (Transaction.is_valid hd) then false else aux tl
+  in
+  aux mempool

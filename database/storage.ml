@@ -1,5 +1,3 @@
-open Drake
-
 (* Real DB in future *)
 let chain_table = "tmp_database/chain_table.json"
 let mempool_table = "tmp_database/mempool_table.json"

@@ -46,6 +46,9 @@ let get_tx_list block =
 let valid_crypto prev curr =
   String.equal prev.hash curr.prev_hash
 
+let verify_merkle_root block =
+  String.equal block.merkle_root (Transaction.calculate_merkle_root block.transactions)
+
 (* String representation of the block *)
 let to_string block =
   (Int.to_string block.index) ^ " " ^

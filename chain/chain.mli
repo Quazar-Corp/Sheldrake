@@ -33,7 +33,7 @@ val add_block : t -> Block.t -> t
 val proof_of_work : int -> int
 
 (* Chain validation *)
-val chain_is_valid  : t -> bool
+val is_valid  : t -> bool
 
 (* Mining one block *)
 val mine_block : t -> Transaction.t list -> Block.t

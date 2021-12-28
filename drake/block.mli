@@ -20,5 +20,7 @@ val get_tx_list : t -> Transaction.t list
 
 val valid_crypto : t -> t -> bool
 
+val verify_merkle_root : t -> bool
+
 val tx_to_string : Transaction.t -> string
 

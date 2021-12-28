@@ -1,5 +1,4 @@
 open Database
-open Drake
 
 let update_nodes_on_network new_node =
   Lwt_main.run (Storage.update_nodes new_node);
@@ -102,7 +101,7 @@ let consensus_update_chain current_node to_verify =
                                     in
                                     req
                        |> fun (resp, body) -> resp |> fun _ -> let* str_body = Cohttp_lwt.Body.to_string body in Chain.of_yojson (Yojson.Safe.from_string str_body)
-                       |> fun ls -> if (Chain.length ls) = (Chain.length to_verify) then aux (count+1) tl else aux count tl
+                       |> fun ls -> if (Chain.length ls) = (Chain.length to_verify) && (Chain.is_valid ls) then aux (count+1) tl else aux count tl
   in
   aux 0 (Node.extract_list nodes)
 
@@ -149,6 +148,6 @@ let consensus_update_mempool current_node to_verify =
                                     in
                                     req
                        |> fun (resp, body) -> resp |> fun _ -> let* str_body = Cohttp_lwt.Body.to_string body in Mempool.of_yojson (Yojson.Safe.from_string str_body)
-                       |> fun ls -> if (Mempool.length ls) = (Mempool.length to_verify) then aux (count+1) tl else aux count tl
+                       |> fun ls -> if (Mempool.length ls) = (Mempool.length to_verify) && (Mempool.is_valid ls) then aux (count+1) tl else aux count tl
   in
   aux 0 (Node.extract_list nodes)
