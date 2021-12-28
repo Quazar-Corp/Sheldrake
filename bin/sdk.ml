@@ -109,7 +109,7 @@ let generate_transaction req =
     | Error _ -> Response.of_json (`Assoc ["message", `String "Something goes wrong..."])
                 |> Response.set_status `Bad_request
   in
-  Lwt.return response
+  Protocol.update_mempool_on_network this_node |> fun _ -> Lwt.return response
 
 (* POST update_mempool *)
 let update_mempool req =
