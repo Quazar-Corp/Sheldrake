@@ -104,8 +104,8 @@ let generate_transaction req =
                 |> fun (_, priv) -> Transaction.create ~sender:mtx.sender ~recipient:mtx.recipient
                                                        ~amount:mtx.amount ~key:priv 
                 |> fun tx -> (Storage.insert_transaction tx, tx) 
-                |> fun (_, tx) -> (Protocol.update_nodes_on_network this_node, Response.of_json (Transaction.to_yojson tx))
-                |> fun (_, resp) -> Response.set_status `Created resp
+                |> fun (_, tx) -> Response.of_json (Transaction.to_yojson tx)
+                |> Response.set_status `Created
     | Error _ -> Response.of_json (`Assoc ["message", `String "Something goes wrong..."])
                 |> Response.set_status `Bad_request
   in
@@ -158,7 +158,7 @@ let add_node req =
                  else Response.of_json (`Assoc ["message", `String "Not accepted"])
                       |> Response.set_status `Not_acceptable
   in
-  Lwt.return response 
+  Protocol.update_mempool_on_network this_node |> fun _ -> Lwt.return response 
 
 (* Setting the new node on network *)
 let start_node () =
