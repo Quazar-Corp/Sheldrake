@@ -29,11 +29,12 @@ to run.
 - [x] DSA(Key generation, Signature and Verification)
 - [x] Merkle root
 - [ ] Improve error handling
-- [ ] Multi-threads(Concurrency)
+- [ ] Concurrency or Parallelism
 - [ ] Real database integration
 - [ ] Smart contract
 - [ ] Optimize client side
 - [ ] Increase test coverage
+- [ ] Docker
 - [ ] CI
 - [ ] Finish README
 
