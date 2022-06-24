@@ -2,6 +2,8 @@ open Drake
 open Database
 open Opium
 
+let () = Postgres.migrate ()
+
 let () = Mirage_crypto_rng_unix.initialize ()
 
 (* Current node info *)
