@@ -1,6 +1,5 @@
 open Opium
 
-
 let info ~func_name ~request ~req_type ~time =
   let client = Option.get (Request.header "client" request)
   in

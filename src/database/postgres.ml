@@ -1,6 +1,6 @@
 (*open Drake*)
 
-exception Query_failed of string
+(*exception Query_failed of string
 
 (* Setup of database pool *)
 (* ********************************************************************************************* *)
@@ -21,10 +21,10 @@ let dispatch func =
     in
     match result with
     | Ok data -> Lwt.return data
-    | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))
+    | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))*)
 (* ********************************************************************************************* *)
 
-
+(*
 (* Running migrations *)
 (* ********************************************************************************************* *)
 (* CLIENT TABLE *)
@@ -81,7 +81,7 @@ let migrate () =
          |> fun () -> dispatch ensure_table_transactions_exists
          |> Lwt_main.run 
          |> fun () -> dispatch ensure_table_nodes_exist
-         |> Lwt_main.run
+         |> Lwt_main.run*)
 (* ********************************************************************************************* *)
 
 

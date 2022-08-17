@@ -1,0 +1,4 @@
+(library
+  (name database)
+  (libraries opium drake mempool chain node caqti caqti-lwt caqti-driver-postgresql uuidm)
+  (preprocess (pps lwt_ppx)))
