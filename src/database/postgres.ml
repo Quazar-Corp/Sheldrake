@@ -1,37 +1,35 @@
-
 exception Query_failed of string
 
 (* Setup of database pool *)
 (* ********************************************************************************************* *)
-let connection_url = "postgresql://localhost:5431/sheldrake?user=admin&password=sup3rS3cr3tP455w0rd
-                      ssl=false"
+let connection_url =
+  "postgresql://localhost:5431/sheldrake?user=admin&password=sup3rS3cr3tP455w0rd\n\
+  \                      ssl=false"
 
 (* Pool connection to the database *)
 let pool =
-    match Caqti_lwt.connect_pool ~max_size:10 (Uri.of_string connection_url) with
-    | Ok pool -> Printf.printf ">>> Connected to database\n"; pool
-    | Error err -> failwith (Caqti_error.show err)
-;;
+  match Caqti_lwt.connect_pool ~max_size:10 (Uri.of_string connection_url) with
+  | Ok pool ->
+      Printf.printf ">>> Connected to database\n";
+      pool
+  | Error err -> failwith (Caqti_error.show err)
 
 (* Execute the queries *)
 let dispatch func =
-    let open Lwt.Syntax
-    in
-    let* result = Caqti_lwt.Pool.use func pool 
-    in
-    match result with
-    | Ok data -> Lwt.return data
-    | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))
+  let open Lwt.Syntax in
+  let* result = Caqti_lwt.Pool.use func pool in
+  match result with
+  | Ok data -> Lwt.return data
+  | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))
 (* ********************************************************************************************* *)
-
 
 (* Running migrations *)
 (* ********************************************************************************************* *)
 (* BLOCK TABLE *)
 let ensure_table_blocks_exists =
-    [%rapper 
-        execute
-            {sql|
+  [%rapper
+    execute
+      {sql|
                 CREATE TABLE IF NOT EXISTS blocks (
                     id SERIAL PRIMARY KEY NOT NULL,
                     index INT NOT NULL, 
@@ -43,13 +41,13 @@ let ensure_table_blocks_exists =
                     hash VARCHAR NOT NULL
                 );
             |sql}]
-            ()
+    ()
 
 (* TRANSACTIONS TABLE *)
 let ensure_table_transactions_exists =
-    [%rapper
-        execute
-            {sql|
+  [%rapper
+    execute
+      {sql|
                 CREATE TABLE IF NOT EXISTS transactions (
                     id SERIAL PRIMARY KEY NOT NULL,
                     sender VARCHAR NOT NULL,
@@ -60,33 +58,28 @@ let ensure_table_transactions_exists =
                     signature VARCHAR NOT NULL
                 );
             |sql}]
-            ()
+    ()
 
 (* EXERCICE TABLE *)
-let ensure_table_nodes_exist = 
-    [%rapper
-        execute
-            {sql|
+let ensure_table_nodes_exist =
+  [%rapper
+    execute
+      {sql|
                 CREATE TABLE IF NOT EXISTS nodes (
                     id SERIAL PRIMARY KEY NOT NULL,
                     hostname VARCHAR NOT NULL,
                     address VARCHAR NOT NULL
                 );
             |sql}]
-            ()
-
+    ()
 
 (* Running *)
 let migrate () =
   Printf.printf ">>> Migrating the database\n";
-  dispatch ensure_table_blocks_exists 
-  |> Lwt_main.run 
-  |> fun () -> dispatch ensure_table_transactions_exists
-  |> Lwt_main.run 
-  |> fun () -> dispatch ensure_table_nodes_exist
-  |> Lwt_main.run
+  dispatch ensure_table_blocks_exists |> Lwt_main.run |> fun () ->
+  dispatch ensure_table_transactions_exists |> Lwt_main.run |> fun () ->
+  dispatch ensure_table_nodes_exist |> Lwt_main.run
 (* ********************************************************************************************* *)
-
 
 (*
 (* READ chain *)
