@@ -5,8 +5,8 @@ authors: [
     "Tiago Onofre"
 ]
 maintainer: "Tiago Onofre"
-homepage: "https://github.com/OnofreTZK/Sheldrake"
-bug-reports: "https://github.com/OnofreTZK/Sheldrake/issues"
+homepage: "https://github.com/Horizon-XT/Sheldrake"
+bug-reports: "https://github.com/Horizon-XT/Sheldrake/issues"
 depends: [
     "opium"
     "caqti"

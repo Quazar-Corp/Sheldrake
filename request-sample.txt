@@ -1,0 +1,2 @@
+curl -X GET "http://<ip>:8333/blockchain/mine" \                                                                                                                                                                 ─╯
+-H "client: <client-ip>"

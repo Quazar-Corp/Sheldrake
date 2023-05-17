@@ -1,6 +1,5 @@
-(*open Drake*)
 
-(*exception Query_failed of string
+exception Query_failed of string
 
 (* Setup of database pool *)
 (* ********************************************************************************************* *)
@@ -10,8 +9,9 @@ let connection_url = "postgresql://localhost:5431/sheldrake?user=admin&password=
 (* Pool connection to the database *)
 let pool =
     match Caqti_lwt.connect_pool ~max_size:10 (Uri.of_string connection_url) with
-    | Ok pool -> pool
+    | Ok pool -> Printf.printf ">>> Connected to database\n"; pool
     | Error err -> failwith (Caqti_error.show err)
+;;
 
 (* Execute the queries *)
 let dispatch func =
@@ -21,40 +21,42 @@ let dispatch func =
     in
     match result with
     | Ok data -> Lwt.return data
-    | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))*)
+    | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))
 (* ********************************************************************************************* *)
 
-(*
+
 (* Running migrations *)
 (* ********************************************************************************************* *)
-(* CLIENT TABLE *)
+(* BLOCK TABLE *)
 let ensure_table_blocks_exists =
     [%rapper 
         execute
             {sql|
                 CREATE TABLE IF NOT EXISTS blocks (
-                    id VARCHAR PRIMARY KEY NOT NULL,
-                    timestamp VARCHAR NOT NULL,
+                    id SERIAL PRIMARY KEY NOT NULL,
+                    index INT NOT NULL, 
+                    timestamp TIMESTAMP NOT NULL,
                     nonce INT NOT NULL,
                     merkle_root VARCHAR NOT NULL,
-                    transactions JSON NULL,
+                    transactions JSONB NULL,
                     prev_hash VARCHAR NOT NULL,
                     hash VARCHAR NOT NULL
                 );
             |sql}]
             ()
 
-(* PERSONAL TABLE *)
+(* TRANSACTIONS TABLE *)
 let ensure_table_transactions_exists =
     [%rapper
         execute
             {sql|
                 CREATE TABLE IF NOT EXISTS transactions (
-                    id VARCHAR PRIMARY KEY NOT NULL,
+                    id SERIAL PRIMARY KEY NOT NULL,
                     sender VARCHAR NOT NULL,
                     recipient VARCHAR NOT NULL,
                     amount FLOAT NOT NULL,
-                    timestamp VARCHAR NOT NULL,
+                    timestamp TIMESTAMP NOT NULL,
+                    key VARCHAR NOT NULL,
                     signature VARCHAR NOT NULL
                 );
             |sql}]
@@ -66,7 +68,7 @@ let ensure_table_nodes_exist =
         execute
             {sql|
                 CREATE TABLE IF NOT EXISTS nodes (
-                    id VARCHAR PRIMARY KEY NOT NULL,
+                    id SERIAL PRIMARY KEY NOT NULL,
                     hostname VARCHAR NOT NULL,
                     address VARCHAR NOT NULL
                 );
@@ -75,13 +77,14 @@ let ensure_table_nodes_exist =
 
 
 (* Running *)
-let migrate () = 
-         dispatch ensure_table_blocks_exists 
-         |> Lwt_main.run 
-         |> fun () -> dispatch ensure_table_transactions_exists
-         |> Lwt_main.run 
-         |> fun () -> dispatch ensure_table_nodes_exist
-         |> Lwt_main.run*)
+let migrate () =
+  Printf.printf ">>> Migrating the database\n";
+  dispatch ensure_table_blocks_exists 
+  |> Lwt_main.run 
+  |> fun () -> dispatch ensure_table_transactions_exists
+  |> Lwt_main.run 
+  |> fun () -> dispatch ensure_table_nodes_exist
+  |> Lwt_main.run
 (* ********************************************************************************************* *)
 
 

@@ -1,7 +1,7 @@
 (*open Drake*)
 
 (* Migrate the database *)
-(*val migrate : unit -> unit*)
+val migrate : unit -> unit
 
 (*
 (* Retrieve all the entire blockchain *)

@@ -2,7 +2,7 @@ open Drake
 open Database
 open Opium
 
-(*let () = Postgres.migrate ()*)
+let () = Postgres.migrate ()
 
 let () = Mirage_crypto_rng_unix.initialize ()
 
@@ -170,6 +170,7 @@ let start_node () =
 
 (* App *)
 let _ =
+  Printf.printf ">>> Starting node...\n";
   Lwt_main.run (start_node ())
   |> fun () -> App.empty
   |> App.host (Node.addr this_node)
@@ -183,4 +184,5 @@ let _ =
   |> App.post "/blockchain/update" update_mempool
   |> App.post "/blockchain/node" add_node
   |> App.get "/blockchain/network" read_network
-  |> App.run_command 
+  |> fun app -> Printf.printf ">>> Starting server..."; app
+  |> App.run_multicore 
