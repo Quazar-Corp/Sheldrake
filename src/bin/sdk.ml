@@ -4,9 +4,7 @@ open Opium
 
 let () = Postgres.migrate ()
 let () = Mirage_crypto_rng_unix.initialize ()
-
-(* Current node info *)
-let this_node = Node.retrieve_host_entries
+let current_node = Node.retrieve_host_entries
 
 (* GET mine_block *)
 let mine_block req =
@@ -17,7 +15,7 @@ let mine_block req =
   let* mempool = Storage.get_mempool () in
   let new_block = Chain.mine_block chain (Mempool.five_transactions mempool) in
   Storage.insert_block new_block |> fun _ ->
-  Protocol.update_chain_on_network this_node |> fun _ ->
+  Protocol.update_chain_on_network current_node |> fun _ ->
   req |> fun _req ->
   Response.of_json
     (`Assoc
@@ -35,7 +33,7 @@ let add_block req =
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
   let updated = Chain.of_yojson json in
-  let* flag = Protocol.consensus_update_chain this_node updated in
+  let* flag = Protocol.consensus_update_chain current_node updated in
   let response =
     if flag then
       Storage.replace_chain updated |> fun _ ->
@@ -76,7 +74,7 @@ let add_transaction req =
     match Transaction.of_yojson json with
     | Ok tx ->
         Storage.insert_transaction tx |> fun _ ->
-        Protocol.update_mempool_on_network this_node |> fun _ ->
+        Protocol.update_mempool_on_network current_node |> fun _ ->
         Response.of_json (Transaction.to_yojson tx)
         |> Response.set_status `Created
     | Error err ->
@@ -113,7 +111,7 @@ let generate_transaction req =
           (`Assoc [ ("message", `String "Something goes wrong...") ])
         |> Response.set_status `Bad_request
   in
-  Protocol.update_mempool_on_network this_node |> fun _ -> Lwt.return response
+  Protocol.update_mempool_on_network current_node |> fun _ -> Lwt.return response
 
 (* POST update_mempool *)
 let update_mempool req =
@@ -122,7 +120,7 @@ let update_mempool req =
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
   let updated = Mempool.of_yojson json in
-  let* flag = Protocol.consensus_update_mempool this_node updated in
+  let* flag = Protocol.consensus_update_mempool current_node updated in
   let response =
     if flag then
       Storage.replace_mempool updated |> fun _ ->
@@ -150,7 +148,7 @@ let add_node req =
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
   let updated = Node.of_yojson json in
-  let* flag = Protocol.consensus_update_nodes this_node updated in
+  let* flag = Protocol.consensus_update_nodes current_node updated in
   let response =
     if flag then
       Storage.replace_network updated |> fun _ ->
@@ -159,24 +157,25 @@ let add_node req =
       Response.of_json (`Assoc [ ("message", `String "Not accepted") ])
       |> Response.set_status `Not_acceptable
   in
-  Protocol.update_mempool_on_network this_node |> fun _ -> Lwt.return response
+  Protocol.update_mempool_on_network current_node |> fun _ -> Lwt.return response
 
 (* Setting the new node on network *)
 let start_node () =
   if
     not
       (Node.check_current_node_on_network
-         (Lwt_main.run (Storage.get_network ()))
-         this_node)
-  then Protocol.update_nodes_on_network this_node
+         (Lwt_main.run (Postgres.get_network ()))
+         current_node)
+  then
+    Lwt_main.run (Postgres.update_network current_node) |> fun () -> Protocol.update_nodes_on_network current_node
   else Lwt.return_unit
 
 (* App *)
 let _ =
   Printf.printf ">>> Starting node...\n";
-  Lwt_main.run (start_node ()) |> fun () ->
+  Lwt_main.run (start_node ());
   App.empty
-  |> App.host (Node.addr this_node)
+  |> App.host (Node.addr current_node)
   |> App.port 8333
   |> App.get "/blockchain/mine" mine_block
   |> App.post "/blockchain/block" add_block

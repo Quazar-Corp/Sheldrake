@@ -25,12 +25,12 @@ let dispatch func =
 
 (* Running migrations *)
 (* ********************************************************************************************* *)
-(* BLOCK TABLE *)
+(* CHAIN TABLE *)
 let ensure_table_blocks_exists =
   [%rapper
     execute
       {sql|
-                CREATE TABLE IF NOT EXISTS blocks (
+                CREATE TABLE IF NOT EXISTS chain (
                     id SERIAL PRIMARY KEY NOT NULL,
                     index INT NOT NULL, 
                     timestamp TIMESTAMP NOT NULL,
@@ -43,12 +43,12 @@ let ensure_table_blocks_exists =
             |sql}]
     ()
 
-(* TRANSACTIONS TABLE *)
+(* MEMPOOL TABLE *)
 let ensure_table_transactions_exists =
   [%rapper
     execute
       {sql|
-                CREATE TABLE IF NOT EXISTS transactions (
+                CREATE TABLE IF NOT EXISTS mempool (
                     id SERIAL PRIMARY KEY NOT NULL,
                     sender VARCHAR NOT NULL,
                     recipient VARCHAR NOT NULL,
@@ -60,12 +60,12 @@ let ensure_table_transactions_exists =
             |sql}]
     ()
 
-(* EXERCICE TABLE *)
+(* NETWORK TABLE *)
 let ensure_table_nodes_exist =
   [%rapper
     execute
       {sql|
-                CREATE TABLE IF NOT EXISTS nodes (
+                CREATE TABLE IF NOT EXISTS network (
                     id SERIAL PRIMARY KEY NOT NULL,
                     hostname VARCHAR NOT NULL,
                     address VARCHAR NOT NULL
@@ -76,104 +76,19 @@ let ensure_table_nodes_exist =
 (* Running *)
 let migrate () =
   Printf.printf ">>> Migrating the database\n";
-  dispatch ensure_table_blocks_exists |> Lwt_main.run |> fun () ->
-  dispatch ensure_table_transactions_exists |> Lwt_main.run |> fun () ->
-  dispatch ensure_table_nodes_exist |> Lwt_main.run
+  dispatch ensure_table_blocks_exists 
+  |> Lwt_main.run 
+  |> fun () -> dispatch ensure_table_transactions_exists 
+  |> Lwt_main.run 
+  |> fun () -> dispatch ensure_table_nodes_exist 
+  |> Lwt_main.run
 (* ********************************************************************************************* *)
 
-(*
-(* READ chain *)
-let get_chain () =
-  Lwt_io.with_file ~mode:Input chain_table (fun input_channel ->
-      let open Lwt.Syntax in
-      let* db_str = Lwt_io.read_lines input_channel |> Lwt_stream.to_list
-      in
-      let db_json =
-        Yojson.Safe.from_string (String.concat "\n" db_str)
-      in 
-      Lwt.return (Chain.of_yojson db_json))
-
-(* CREATE block *)
-let insert_block block =
-  let open Lwt.Syntax in
-  let* chain = get_chain () 
-  in
-  let updated_chain = Chain.add_block chain block
-  in
-  Lwt_io.with_file ~mode:Output chain_table (fun output_channel ->
-      let chain_string =
-        updated_chain |> Chain.to_yojson |> Yojson.Safe.pretty_to_string
-      in
-      Lwt_io.write output_channel chain_string)
-
-(* REPLACE Chain *)
-let replace_chain chain =
-  Lwt_io.with_file ~mode:Output chain_table (fun output_channel ->
-      let chain_string =
-        chain |> Chain.to_yojson |> Yojson.Safe.pretty_to_string
-      in
-      Lwt_io.write output_channel chain_string)
-
-(* READ mempool *)
-let get_mempool () =
-  Lwt_io.with_file ~mode:Input mempool_table (fun input_channel ->
-      let open Lwt.Syntax in
-      let* db_str = Lwt_io.read_lines input_channel |> Lwt_stream.to_list
-      in
-      let db_json =
-        Yojson.Safe.from_string (String.concat "\n" db_str)
-      in 
-      Lwt.return (Mempool.of_yojson db_json))
-
-(* CREATE Transaction *)
-let insert_transaction tx =
-  let open Lwt.Syntax in
-  let* mempool = get_mempool () 
-  in
-  let updated_mempool = Mempool.add_transaction mempool tx
-  in
-  Lwt_io.with_file ~mode:Output mempool_table (fun output_channel ->
-      let mempool_string =
-        updated_mempool |> Mempool.to_yojson |> Yojson.Safe.pretty_to_string
-      in
-      Lwt_io.write output_channel mempool_string)
-
-(* REPLACE Chain *)
-let replace_mempool mempool =
-  Lwt_io.with_file ~mode:Output mempool_table (fun output_channel ->
-      let mempool_string =
-        mempool |> Mempool.to_yojson |> Yojson.Safe.pretty_to_string
-      in
-      Lwt_io.write output_channel mempool_string)
-
-(* READ nodes *)
+(* Queries *)
+(* ********************************************************************************************* *)
 let get_network () =
-  Lwt_io.with_file ~mode:Input node_table (fun input_channel ->
-      let open Lwt.Syntax in
-      let* db_str = Lwt_io.read_lines input_channel |> Lwt_stream.to_list
-      in
-      let db_json =
-        Yojson.Safe.from_string (String.concat "\n" db_str)
-      in 
-      Lwt.return (Node.of_yojson db_json))
+  dispatch Query.read_network
 
-(* CREATE Node *)
-let update_nodes node =
-  let open Lwt.Syntax in
-  let* network = get_network () 
-  in
-  let updated_network = Node.add_node network node
-  in
-  Lwt_io.with_file ~mode:Output node_table (fun output_channel ->
-      let network_string =
-        updated_network |> Node.to_yojson |> Yojson.Safe.pretty_to_string
-      in
-      Lwt_io.write output_channel network_string)
-
-(* REPLACE Network *)
-let replace_network network =
-  Lwt_io.with_file ~mode:Output node_table (fun output_channel ->
-      let network_string =
-        network |> Node.to_yojson |> Yojson.Safe.pretty_to_string
-      in
-      Lwt_io.write output_channel network_string)*)
+let update_network node =
+  let hostname, address = Node.unpack_the_node node in
+  dispatch (Query.update_network ~hostname ~address)

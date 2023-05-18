@@ -1,9 +1,20 @@
+type query
+
 type host_info
 
 type t
 
+(* Function to avoid inference problems *)
+val init : string -> string -> host_info
+
 (* Compare host infos *)
 val (=) : host_info -> host_info -> bool
+
+(* host info from query *)
+val query_to_host_info : query -> host_info
+
+(* host info to query *)
+val host_info_to_query : int -> host_info -> query 
 
 (* External function to retrieve ip address with global scope *)
 external get_global_addr : unit -> string = "stub_get_global_addr"
@@ -13,6 +24,7 @@ val length : t -> int
 
 (* Due to lack of knownledge on type driven design *)
 val extract_list : t -> host_info list
+val unpack_the_node : host_info -> string * string
 
 (* yojson generated function *)
 val host_info_of_yojson : Yojson.Safe.t -> (host_info, string) Result.result
@@ -39,5 +51,5 @@ val addr : host_info -> string
 val name : host_info -> string
 
 (* Check if the current is already registered *)
-val check_current_node_on_network : t -> host_info -> bool
+val check_current_node_on_network : host_info list -> host_info -> bool
 

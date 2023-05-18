@@ -1,7 +1,6 @@
 open Database
 
 let update_nodes_on_network new_node =
-  Lwt_main.run (Storage.update_nodes new_node);
   let open Lwt.Syntax in
   let* updated_network = Storage.get_network () in
   let network_string =
