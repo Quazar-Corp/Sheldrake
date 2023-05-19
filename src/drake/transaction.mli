@@ -7,6 +7,8 @@ val to_yojson : t -> Yojson.Safe.t
 
 val to_string : t -> string
 
+val unpack_the_transaction : t -> string * string * float * string * string * string 
+
 (* sign ~transaction ~private_key *)
 val sign : t -> string -> string
 

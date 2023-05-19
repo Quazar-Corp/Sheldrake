@@ -103,7 +103,7 @@ let generate_transaction req =
         Transaction.create ~sender:mtx.sender ~recipient:mtx.recipient
           ~amount:mtx.amount ~key:priv
         |> fun tx ->
-        (Storage.insert_transaction tx, tx) |> fun (_, tx) ->
+        (Postgres.insert_transaction tx, tx) |> fun (_, tx) ->
         Response.of_json (Transaction.to_yojson tx)
         |> Response.set_status `Created
     | Error _ ->
@@ -187,5 +187,5 @@ let _ =
   |> App.post "/blockchain/node" add_node
   |> App.get "/blockchain/network" read_network
   |> fun app ->
-  Printf.printf ">>> Starting server...";
+  Printf.printf ">>> Starting server...\n";
   app |> App.run_multicore

@@ -53,7 +53,7 @@ let ensure_table_transactions_exists =
                     sender VARCHAR NOT NULL,
                     recipient VARCHAR NOT NULL,
                     amount FLOAT NOT NULL,
-                    timestamp TIMESTAMP NOT NULL,
+                    timestamp VARCHAR NOT NULL,
                     key VARCHAR NOT NULL,
                     signature VARCHAR NOT NULL
                 );
@@ -89,6 +89,10 @@ let migrate () =
 let get_network () =
   dispatch Query.read_network
 
-let update_network node =
+let update_network (node: Node.host_info) =
   let hostname, address = Node.unpack_the_node node in
   dispatch (Query.update_network ~hostname ~address)
+
+let insert_transaction (t: Drake.Transaction.t )=
+  let sender, recipient, amount, timestamp, key, signature = Drake.Transaction.unpack_the_transaction t in
+  dispatch (Query.insert_transaction ~sender ~recipient ~amount ~timestamp ~key ~signature)

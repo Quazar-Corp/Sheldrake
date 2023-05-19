@@ -18,3 +18,17 @@ let update_network =
         |sql}
         ]
 
+let insert_transaction =
+  [%rapper
+    execute
+        {sql|
+            INSERT INTO mempool (sender, recipient, amount, timestamp, key, signature)
+            VALUES 
+                (%string{sender}, 
+                %string{recipient}, 
+                %float{amount}, 
+                %string{timestamp}, 
+                %string{key}, 
+                %string{signature});
+        |sql}
+        ]
