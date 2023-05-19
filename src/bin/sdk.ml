@@ -111,7 +111,8 @@ let generate_transaction req =
           (`Assoc [ ("message", `String "Something goes wrong...") ])
         |> Response.set_status `Bad_request
   in
-  Protocol.update_mempool_on_network current_node |> fun _ -> Lwt.return response
+  Protocol.update_mempool_on_network current_node |> fun _ ->
+  Lwt.return response
 
 (* POST update_mempool *)
 let update_mempool req =
@@ -157,7 +158,8 @@ let add_node req =
       Response.of_json (`Assoc [ ("message", `String "Not accepted") ])
       |> Response.set_status `Not_acceptable
   in
-  Protocol.update_mempool_on_network current_node |> fun _ -> Lwt.return response
+  Protocol.update_mempool_on_network current_node |> fun _ ->
+  Lwt.return response
 
 (* Setting the new node on network *)
 let start_node () =
@@ -167,7 +169,8 @@ let start_node () =
          (Lwt_main.run (Postgres.get_network ()))
          current_node)
   then
-    Lwt_main.run (Postgres.update_network current_node) |> fun () -> Protocol.update_nodes_on_network current_node
+    Lwt_main.run (Postgres.update_network current_node) |> fun () ->
+    Protocol.update_nodes_on_network current_node
   else Lwt.return_unit
 
 (* App *)

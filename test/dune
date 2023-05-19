@@ -1,5 +1,17 @@
 (tests
  (names test_block)
- (libraries opium chain sha database protocol node drake crypto qcheck-core qcheck-alcotest alcotest)
- (preprocess (pps ppx_deriving_yojson))
+ (libraries
+  opium
+  chain
+  sha
+  database
+  protocol
+  node
+  drake
+  crypto
+  qcheck-core
+  qcheck-alcotest
+  alcotest)
+ (preprocess
+  (pps ppx_deriving_yojson))
  (package sheldrake))

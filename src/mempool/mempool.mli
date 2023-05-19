@@ -19,4 +19,3 @@ val five_transactions : t -> Transaction.t list
 
 (* Verify the transactions in the mempool *)
 val is_valid : t -> bool
-

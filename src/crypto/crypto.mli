@@ -5,7 +5,7 @@ val priv_to_string : Z.t * Z.t * Z.t * Z.t * Z.t -> string
 val pub_to_string : Z.t * Z.t * Z.t * Z.t -> string
 
 (* Convert a string into Mirage_crypto_pk.DSA key type *)
-val priv_of_string : string -> Dsa.priv 
+val priv_of_string : string -> Dsa.priv
 val pub_of_string : string -> Dsa.pub
 
 (* Generate a fresh pair of keys -> encoded in base64 from their Sexpr *)
