@@ -1,3 +1,0 @@
-(library
-  (name database)
-  (libraries opium drake mempool chain node))

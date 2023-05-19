@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:14
+    container_name: sheldrake-database
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "sup3rS3cr3tP455w0rd"
+      POSTGRES_USER: "admin"
+      POSTGRES_DB: "sheldrake"
+    ports:
+        - 5431:5432

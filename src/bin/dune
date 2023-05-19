@@ -1,0 +1,7 @@
+(executable
+  (public_name sheldrake)
+  (name sdk)
+  (libraries opium chain mempool database protocol node drake sha cohttp cohttp-lwt-unix 
+             caqti caqti-lwt caqti-driver-postgresql uuidm alcotest
+             mirage-crypto-rng.unix crypto)
+  (preprocess (pps ppx_deriving_yojson lwt_ppx)))

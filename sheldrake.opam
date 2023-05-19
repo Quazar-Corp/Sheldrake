@@ -1,0 +1,29 @@
+opam-version: "2.0"
+name: "sheldrake"
+version: "0.0.1"
+authors: [
+    "Tiago Onofre"
+]
+maintainer: "Tiago Onofre"
+homepage: "https://github.com/Horizon-XT/Sheldrake"
+bug-reports: "https://github.com/Horizon-XT/Sheldrake/issues"
+depends: [
+    "opium"
+    "caqti"
+    "caqti-lwt"
+    "caqti-driver-postgresql"
+    "uuidm"
+    "ppx_rapper_lwt"
+    "lwt_ppx"
+    "ppx_rapper"
+    "ppx_deriving_yojson"
+    "cohttp-lwt-unix"
+    "mirage-crypto-rng.unix"
+    "sha"
+    "alcotest" 
+    "ocaml" {(>= "4.12") & (<= "4.14")}
+]
+build: [
+    ["dune" "build" "-p" name]
+]
+synopsis: "Sheldrake Blockchain"
