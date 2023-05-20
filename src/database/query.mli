@@ -1,3 +1,5 @@
+open Drake
+
 (* Retrieve the blockchain network (all the nodes)*)
 val read_network :
   (module Rapper_helper.CONNECTION) ->
@@ -20,3 +22,8 @@ val insert_transaction :
   signature:string ->
   (module Rapper_helper.CONNECTION) ->
   (unit, [> Caqti_error.call_or_retrieve ]) result Lwt.t
+
+(* Retrieve the network's mempool (all available transactions)*)
+val read_mempool :
+  (module Rapper_helper.CONNECTION) ->
+  (Transaction.t list, [> Caqti_error.call_or_retrieve ]) result Lwt.t

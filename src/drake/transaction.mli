@@ -1,6 +1,8 @@
 (* Transaction type *)
 type t
 
+(* Function to avoid inference problems *)
+val init : string -> string -> float -> string -> string -> string -> t
 val of_yojson : Yojson.Safe.t -> (t, string) Result.result
 val to_yojson : t -> Yojson.Safe.t
 val to_string : t -> string

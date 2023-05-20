@@ -59,8 +59,9 @@ let read_mempool req =
   Logs.info ~func_name:"read_mempool" ~request:req ~req_type:"GET"
     ~time:(Unix.time ());
   let open Lwt.Syntax in
-  let* mempool = Storage.get_mempool () in
-  let json = Mempool.to_yojson mempool in
+  let* mempool = Postgres.get_mempool () in
+  let json = Mempool.to_yojson (Mempool.of_tx_list mempool) in
+  (* Gambiarra *)
   let response = Response.of_json json in
   req |> fun _req -> Lwt.return response
 
@@ -73,7 +74,7 @@ let add_transaction req =
   let response =
     match Transaction.of_yojson json with
     | Ok tx ->
-        Storage.insert_transaction tx |> fun _ ->
+        Postgres.insert_transaction tx |> fun _ ->
         Protocol.update_mempool_on_network current_node |> fun _ ->
         Response.of_json (Transaction.to_yojson tx)
         |> Response.set_status `Created

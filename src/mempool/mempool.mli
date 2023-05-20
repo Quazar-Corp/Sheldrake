@@ -2,6 +2,9 @@ open Drake
 
 type t
 
+val of_tx_list : Transaction.t list -> t
+val to_tx_list : t -> Transaction.t list
+
 (* Convert to json *)
 val to_yojson : t -> Yojson.Safe.t
 

@@ -1,9 +1,11 @@
+open Drake
+
 let read_network =
   [%rapper
     get_many
       {sql|
-              SELECT @string{hostname}, @string{address}
-              FROM network;
+            SELECT @string{hostname}, @string{address}
+            FROM network;
           |sql}
       function_out]
     (fun ~hostname ~address -> Node.init hostname address)
@@ -30,3 +32,20 @@ let insert_transaction =
                 %string{key}, 
                 %string{signature});
         |sql}]
+
+let read_mempool =
+  [%rapper
+    get_many
+      {sql|
+            SELECT @string{sender}, 
+                   @string{recipient},
+                   @float{amount},
+                   @string{timestamp},
+                   @string{key},
+                   @string{signature}
+            FROM mempool;
+          |sql}
+      function_out]
+    (fun ~sender ~recipient ~amount ~timestamp ~key ~signature ->
+      Transaction.init sender recipient amount timestamp key signature)
+    ()

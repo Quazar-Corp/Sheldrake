@@ -96,3 +96,5 @@ let insert_transaction (t : Drake.Transaction.t) =
   dispatch
     (Query.insert_transaction ~sender ~recipient ~amount ~timestamp ~key
        ~signature)
+
+let get_mempool () = dispatch Query.read_mempool
