@@ -10,7 +10,10 @@ val get_network : unit -> Node.host_info list Lwt.t
 val update_network : Node.host_info -> unit Lwt.t
 
 (* INSERT a validated transaction in Mempool *)
-val insert_transaction : Drake.Transaction.t -> unit Lwt.t
+val insert_transaction : Transaction.t -> unit Lwt.t
 
 (* READ all the transactions in the Mempool *)
 val get_mempool : unit -> Transaction.t list Lwt.t
+
+(* INSERT a new validated block in the chain *)
+val insert_block : Block.t -> unit Lwt.t

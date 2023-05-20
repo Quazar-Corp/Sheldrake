@@ -27,3 +27,15 @@ val insert_transaction :
 val read_mempool :
   (module Rapper_helper.CONNECTION) ->
   (Transaction.t list, [> Caqti_error.call_or_retrieve ]) result Lwt.t
+
+(* Insert the new block in the chain *)
+val insert_block :
+  index:int ->
+  timestamp:string ->
+  nonce:int ->
+  merkle_root:string ->
+  transactions:string ->
+  prev_hash:string ->
+  hash:string ->
+  (module Rapper_helper.CONNECTION) ->
+  (unit, [> Caqti_error.call_or_retrieve ]) result Lwt.t

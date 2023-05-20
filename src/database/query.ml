@@ -49,3 +49,18 @@ let read_mempool =
     (fun ~sender ~recipient ~amount ~timestamp ~key ~signature ->
       Transaction.init sender recipient amount timestamp key signature)
     ()
+
+let insert_block =
+  [%rapper
+    execute
+      {sql|
+            INSERT INTO chain (index, timestamp, nonce, merkle_root, transactions, prev_hash, hash)
+            VALUES 
+                (%int{index}, 
+                %string{timestamp}, 
+                %int{nonce}, 
+                %string{merkle_root}, 
+                %string{transactions}, 
+                %string{prev_hash},
+                %string{hash});
+        |sql}]

@@ -1,3 +1,5 @@
+open Drake
+
 exception Query_failed of string
 
 (* Setup of database pool *)
@@ -33,7 +35,7 @@ let ensure_table_blocks_exists =
                 CREATE TABLE IF NOT EXISTS chain (
                     id SERIAL PRIMARY KEY NOT NULL,
                     index INT NOT NULL, 
-                    timestamp TIMESTAMP NOT NULL,
+                    timestamp VARCHAR NOT NULL,
                     nonce INT NOT NULL,
                     merkle_root VARCHAR NOT NULL,
                     transactions JSONB NULL,
@@ -89,12 +91,24 @@ let update_network (node : Node.host_info) =
   let hostname, address = Node.unpack_the_node node in
   dispatch (Query.update_network ~hostname ~address)
 
-let insert_transaction (t : Drake.Transaction.t) =
+let insert_transaction (t : Transaction.t) =
   let sender, recipient, amount, timestamp, key, signature =
-    Drake.Transaction.unpack_the_transaction t
+    Transaction.unpack_the_transaction t
   in
   dispatch
     (Query.insert_transaction ~sender ~recipient ~amount ~timestamp ~key
        ~signature)
 
 let get_mempool () = dispatch Query.read_mempool
+
+let insert_block b =
+  let index, timestamp, nonce, merkle_root, transactions, prev_hash, hash =
+    Block.unpack_the_block b
+  in
+  let json_str_txns =
+    transactions |> Mempool.of_tx_list |> Mempool.to_yojson
+    |> Yojson.Safe.pretty_to_string
+  in
+  dispatch
+    (Query.insert_block ~index ~timestamp ~nonce ~merkle_root
+       ~transactions:json_str_txns ~prev_hash ~hash)

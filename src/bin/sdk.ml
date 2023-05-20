@@ -12,9 +12,12 @@ let mine_block req =
     ~time:(Unix.time ());
   let open Lwt.Syntax in
   let* chain = Storage.get_chain () in
-  let* mempool = Storage.get_mempool () in
-  let new_block = Chain.mine_block chain (Mempool.five_transactions mempool) in
-  Storage.insert_block new_block |> fun _ ->
+  let* mempool = Postgres.get_mempool () in
+  let new_block =
+    Chain.mine_block chain
+      (Mempool.five_transactions (Mempool.of_tx_list mempool))
+  in
+  Postgres.insert_block new_block |> fun _ ->
   Protocol.update_chain_on_network current_node |> fun _ ->
   req |> fun _req ->
   Response.of_json
