@@ -53,7 +53,7 @@ let ensure_table_transactions_exists =
                     sender VARCHAR NOT NULL,
                     recipient VARCHAR NOT NULL,
                     amount FLOAT NOT NULL,
-                    timestamp TIMESTAMP NOT NULL,
+                    timestamp VARCHAR NOT NULL,
                     key VARCHAR NOT NULL,
                     signature VARCHAR NOT NULL
                 );
@@ -76,19 +76,25 @@ let ensure_table_nodes_exist =
 (* Running *)
 let migrate () =
   Printf.printf ">>> Migrating the database\n";
-  dispatch ensure_table_blocks_exists 
-  |> Lwt_main.run 
-  |> fun () -> dispatch ensure_table_transactions_exists 
-  |> Lwt_main.run 
-  |> fun () -> dispatch ensure_table_nodes_exist 
-  |> Lwt_main.run
+  dispatch ensure_table_blocks_exists |> Lwt_main.run |> fun () ->
+  dispatch ensure_table_transactions_exists |> Lwt_main.run |> fun () ->
+  dispatch ensure_table_nodes_exist |> Lwt_main.run
 (* ********************************************************************************************* *)
 
 (* Queries *)
 (* ********************************************************************************************* *)
-let get_network () =
-  dispatch Query.read_network
+let get_network () = dispatch Query.read_network
 
-let update_network node =
+let update_network (node : Node.host_info) =
   let hostname, address = Node.unpack_the_node node in
   dispatch (Query.update_network ~hostname ~address)
+
+let insert_transaction (t : Drake.Transaction.t) =
+  let sender, recipient, amount, timestamp, key, signature =
+    Drake.Transaction.unpack_the_transaction t
+  in
+  dispatch
+    (Query.insert_transaction ~sender ~recipient ~amount ~timestamp ~key
+       ~signature)
+
+let get_mempool () = dispatch Query.read_mempool

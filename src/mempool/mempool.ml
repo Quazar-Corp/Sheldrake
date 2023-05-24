@@ -2,6 +2,8 @@ open Drake
 
 type t = Transaction.t list
 
+let of_tx_list tl : t = tl
+let to_tx_list mp : Transaction.t list = mp
 let to_yojson mempool = [%to_yojson: Transaction.t list] mempool
 
 let of_yojson json =

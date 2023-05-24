@@ -1,11 +1,11 @@
 type host_info = { hostname : string; address : string } [@@deriving yojson]
 
-type query = { id : int; query_hostname : string; query_address : string} [@@deriving yojson]
+type query = { id : int; query_hostname : string; query_address : string }
+[@@deriving yojson]
 
 type t = host_info list
 
-let init hostname address =
-  { hostname; address }
+let init hostname address = { hostname; address }
 
 let ( = ) host_1 host_2 =
   let name =
@@ -16,17 +16,15 @@ let ( = ) host_1 host_2 =
   in
   if name && address then true else false
 
-let query_to_host_info { id = _; query_hostname = hostname; query_address = address } =
+let query_to_host_info
+    { id = _; query_hostname = hostname; query_address = address } =
   { hostname; address }
 
-let host_info_to_query id {hostname; address} =
+let host_info_to_query id { hostname; address } =
   { id; query_hostname = hostname; query_address = address }
 
 let extract_list network = network
-
-let unpack_the_node node =
-  (node.hostname, node.address)
-
+let unpack_the_node node = (node.hostname, node.address)
 let length network = List.length network
 
 external get_global_addr : unit -> string = "stub_get_global_addr"

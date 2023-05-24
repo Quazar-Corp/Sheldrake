@@ -10,8 +10,14 @@ type t = {
 }
 [@@deriving yojson]
 
+let init sender recipient amount timestamp key signature =
+  { sender; recipient; amount; timestamp; key; signature }
+
 let to_string tx =
   tx.sender ^ tx.recipient ^ Float.to_string tx.amount ^ tx.timestamp ^ tx.key
+
+let unpack_the_transaction tx =
+  (tx.sender, tx.recipient, tx.amount, tx.timestamp, tx.key, tx.signature)
 
 let sign tx key = Crypto.sign ~message:(to_string tx) ~key
 

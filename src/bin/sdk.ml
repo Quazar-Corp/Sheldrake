@@ -59,8 +59,9 @@ let read_mempool req =
   Logs.info ~func_name:"read_mempool" ~request:req ~req_type:"GET"
     ~time:(Unix.time ());
   let open Lwt.Syntax in
-  let* mempool = Storage.get_mempool () in
-  let json = Mempool.to_yojson mempool in
+  let* mempool = Postgres.get_mempool () in
+  let json = Mempool.to_yojson (Mempool.of_tx_list mempool) in
+  (* Gambiarra *)
   let response = Response.of_json json in
   req |> fun _req -> Lwt.return response
 
@@ -73,7 +74,7 @@ let add_transaction req =
   let response =
     match Transaction.of_yojson json with
     | Ok tx ->
-        Storage.insert_transaction tx |> fun _ ->
+        Postgres.insert_transaction tx |> fun _ ->
         Protocol.update_mempool_on_network current_node |> fun _ ->
         Response.of_json (Transaction.to_yojson tx)
         |> Response.set_status `Created
@@ -103,7 +104,7 @@ let generate_transaction req =
         Transaction.create ~sender:mtx.sender ~recipient:mtx.recipient
           ~amount:mtx.amount ~key:priv
         |> fun tx ->
-        (Storage.insert_transaction tx, tx) |> fun (_, tx) ->
+        (Postgres.insert_transaction tx, tx) |> fun (_, tx) ->
         Response.of_json (Transaction.to_yojson tx)
         |> Response.set_status `Created
     | Error _ ->
@@ -111,7 +112,8 @@ let generate_transaction req =
           (`Assoc [ ("message", `String "Something goes wrong...") ])
         |> Response.set_status `Bad_request
   in
-  Protocol.update_mempool_on_network current_node |> fun _ -> Lwt.return response
+  Protocol.update_mempool_on_network current_node |> fun _ ->
+  Lwt.return response
 
 (* POST update_mempool *)
 let update_mempool req =
@@ -157,7 +159,8 @@ let add_node req =
       Response.of_json (`Assoc [ ("message", `String "Not accepted") ])
       |> Response.set_status `Not_acceptable
   in
-  Protocol.update_mempool_on_network current_node |> fun _ -> Lwt.return response
+  Protocol.update_mempool_on_network current_node |> fun _ ->
+  Lwt.return response
 
 (* Setting the new node on network *)
 let start_node () =
@@ -167,7 +170,8 @@ let start_node () =
          (Lwt_main.run (Postgres.get_network ()))
          current_node)
   then
-    Lwt_main.run (Postgres.update_network current_node) |> fun () -> Protocol.update_nodes_on_network current_node
+    Lwt_main.run (Postgres.update_network current_node) |> fun () ->
+    Protocol.update_nodes_on_network current_node
   else Lwt.return_unit
 
 (* App *)
@@ -187,5 +191,5 @@ let _ =
   |> App.post "/blockchain/node" add_node
   |> App.get "/blockchain/network" read_network
   |> fun app ->
-  Printf.printf ">>> Starting server...";
+  Printf.printf ">>> Starting server...\n";
   app |> App.run_multicore

@@ -17,3 +17,5 @@ yarn-error.log
 test-e2e-re/lib/verdaccio/storage
 *~
 *.swp
+
+request-sample.txt
