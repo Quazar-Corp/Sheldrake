@@ -2,8 +2,6 @@ open Drake
 
 type t = Block.t list
 
-let of_b_list bl : t = bl
-let to_b_list cp : Block.t list = cp
 let to_yojson chain = [%to_yojson: Block.t list] chain
 
 let of_yojson json =

@@ -2,9 +2,6 @@ open Drake
 
 type t
 
-val of_b_list : Block.t list -> t
-val to_b_list : t -> Block.t list
-
 (* Chain to json *)
 val to_yojson : t -> Yojson.Safe.t
 

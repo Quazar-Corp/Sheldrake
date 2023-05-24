@@ -11,9 +11,6 @@ type t = {
 }
 [@@deriving yojson]
 
-let init index timestamp nonce merkle_root transactions prev_hash hash =
-  { index; timestamp; nonce; merkle_root; transactions; prev_hash; hash }
-
 (* Return a new block *)
 let create ~nonce ~transactions ~prev_hash =
   let timestamp = Float.to_string (Unix.time ()) in
@@ -59,15 +56,6 @@ let to_string block =
   Int.to_string block.index ^ " " ^ block.timestamp ^ " "
   ^ Int.to_string block.nonce ^ " " ^ block.merkle_root ^ " " ^ block.prev_hash
   ^ " "
-
-let unpack_the_block block =
-  ( block.index,
-    block.timestamp,
-    block.nonce,
-    block.merkle_root,
-    block.transactions,
-    block.prev_hash,
-    block.hash )
 
 (* Transaction list to string *)
 let tx_to_string tx = Transaction.to_string tx

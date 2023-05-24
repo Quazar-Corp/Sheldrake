@@ -11,20 +11,17 @@ let mine_block req =
   Logs.info ~func_name:"mine_block" ~request:req ~req_type:"GET"
     ~time:(Unix.time ());
   let open Lwt.Syntax in
-  let* chain = Postgres.get_chain () in
-  let* mempool = Postgres.get_mempool () in
-  let new_block =
-    Chain.mine_block (Chain.of_b_list chain)
-      (Mempool.five_transactions (Mempool.of_tx_list mempool))
-  in
-  Postgres.insert_block new_block |> fun _ ->
+  let* chain = Storage.get_chain () in
+  let* mempool = Storage.get_mempool () in
+  let new_block = Chain.mine_block chain (Mempool.five_transactions mempool) in
+  Storage.insert_block new_block |> fun _ ->
   Protocol.update_chain_on_network current_node |> fun _ ->
   req |> fun _req ->
   Response.of_json
     (`Assoc
       [
         ("message", `String "Successful mined!");
-        ("length", `Int (Chain.length (Chain.of_b_list chain) + 1));
+        ("length", `Int (Chain.length chain + 1));
       ])
   |> Response.set_status `Created
   |> Lwt.return
@@ -52,8 +49,8 @@ let read_chain req =
   Logs.info ~func_name:"read_chain" ~request:req ~req_type:"GET"
     ~time:(Unix.time ());
   let open Lwt.Syntax in
-  let* chain = Postgres.get_chain () in
-  let json = Chain.to_yojson (Chain.of_b_list chain) in
+  let* chain = Storage.get_chain () in
+  let json = Chain.to_yojson chain in
   let response = Response.of_json json in
   req |> fun _req -> Lwt.return response
 

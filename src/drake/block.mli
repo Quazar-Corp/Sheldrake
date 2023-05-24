@@ -1,16 +1,10 @@
 type t
 
-val init :
-  int -> string -> int -> string -> Transaction.t list -> string -> string -> t
-
 val of_yojson : Yojson.Safe.t -> (t, string) Result.result
 val to_yojson : t -> Yojson.Safe.t
 
 val create :
   nonce:int -> transactions:Transaction.t list -> prev_hash:string -> t
-
-val unpack_the_block :
-  t -> int * string * int * string * Transaction.t list * string * string
 
 val to_string : t -> string
 val update_index : t -> int -> unit
