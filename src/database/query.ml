@@ -64,3 +64,25 @@ let insert_block =
                 %string{prev_hash},
                 %string{hash});
         |sql}]
+
+let read_chain =
+  [%rapper
+    get_many
+      {sql|
+            SELECT @int{index}, 
+                   @string{timestamp}, 
+                   @int{nonce}, 
+                   @string{merkle_root}, 
+                   @string{transactions}, 
+                   @string{prev_hash},
+                   @string{hash}
+            FROM chain;
+          |sql}
+      function_out]
+    (fun ~index ~timestamp ~nonce ~merkle_root ~transactions ~prev_hash ~hash ->
+      let transactions' =
+        Yojson.Safe.from_string transactions
+        |> Mempool.of_yojson |> Mempool.to_tx_list
+      in
+      Block.init index timestamp nonce merkle_root transactions' prev_hash hash)
+    ()

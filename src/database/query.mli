@@ -39,3 +39,8 @@ val insert_block :
   hash:string ->
   (module Rapper_helper.CONNECTION) ->
   (unit, [> Caqti_error.call_or_retrieve ]) result Lwt.t
+
+(* Retrieve the network's chain*)
+val read_chain :
+  (module Rapper_helper.CONNECTION) ->
+  (Block.t list, [> Caqti_error.call_or_retrieve ]) result Lwt.t

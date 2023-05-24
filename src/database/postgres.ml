@@ -112,3 +112,5 @@ let insert_block b =
   dispatch
     (Query.insert_block ~index ~timestamp ~nonce ~merkle_root
        ~transactions:json_str_txns ~prev_hash ~hash)
+
+let get_chain () = dispatch Query.read_chain

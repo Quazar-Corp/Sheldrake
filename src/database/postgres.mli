@@ -17,3 +17,6 @@ val get_mempool : unit -> Transaction.t list Lwt.t
 
 (* INSERT a new validated block in the chain *)
 val insert_block : Block.t -> unit Lwt.t
+
+(* READ all the blocks in the chain *)
+val get_chain : unit -> Block.t list Lwt.t
