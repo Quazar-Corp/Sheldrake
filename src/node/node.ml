@@ -14,8 +14,7 @@ let ( = ) host_1 host_2 =
   in
   if name && address then true else false
 
-let query_to_t
-    { id = _; query_hostname = hostname; query_address = address } =
+let query_to_t { id = _; query_hostname = hostname; query_address = address } =
   { hostname; address }
 
 let t_to_query id { hostname; address } =

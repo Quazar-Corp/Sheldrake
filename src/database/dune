@@ -3,8 +3,6 @@
  (libraries
   opium
   drake
-  mempool
-  chain
   node
   caqti
   caqti-lwt

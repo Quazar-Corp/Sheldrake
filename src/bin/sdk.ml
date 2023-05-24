@@ -2,8 +2,7 @@ open Drake
 open Database
 open Opium
 
-let () = Postgres.migrate ()
-let () = Mirage_crypto_rng_unix.initialize ()
+(* Retrieve current node information *)
 let current_node = Node.retrieve_host_entries
 
 (* GET mine_block *)
@@ -14,10 +13,10 @@ let mine_block req =
   let* chain = Postgres.get_chain () in
   let* mempool = Postgres.get_mempool () in
   let new_block =
-    Chain.mine_block (Chain.of_b_list chain)
-      (Transaction.five_transactions mempool) 
-      (* TODO: how many and how to select the transactions in the mempool*)
+    Block.mine_block (Transaction.five_transactions mempool) chain
+    (* TODO: how many and how to select the transactions in the mempool*)
   in
+
   Postgres.insert_block new_block |> fun _ ->
   Protocol.update_chain_on_network current_node |> fun _ ->
   req |> fun _req ->
@@ -25,7 +24,7 @@ let mine_block req =
     (`Assoc
       [
         ("message", `String "Successful mined!");
-        ("length", `Int (Chain.length (Chain.of_b_list chain) + 1));
+        ("length", `Int (List.length chain + 1));
       ])
   |> Response.set_status `Created
   |> Lwt.return
@@ -36,7 +35,7 @@ let add_block req =
     ~time:(Unix.time ());
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
-  let updated = Chain.of_yojson json in
+  let updated = Block.of_yojson_list json in
   let* flag = Protocol.consensus_update_chain current_node updated in
   let response =
     if flag then
@@ -54,7 +53,7 @@ let read_chain req =
     ~time:(Unix.time ());
   let open Lwt.Syntax in
   let* chain = Postgres.get_chain () in
-  let json = Chain.to_yojson (Chain.of_b_list chain) in
+  let json = Block.to_yojson_list chain in
   let response = Response.of_json json in
   req |> fun _req -> Lwt.return response
 
@@ -124,7 +123,7 @@ let update_mempool req =
     ~time:(Unix.time ());
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
-  let updated = Mempool.of_yojson json in
+  let updated = Transaction.of_yojson_list json in
   let* flag = Protocol.consensus_update_mempool current_node updated in
   let response =
     if flag then
@@ -165,12 +164,17 @@ let add_node req =
   Protocol.update_mempool_on_network current_node |> fun _ ->
   Lwt.return response
 
+(* Database migrations*)
+let () = Postgres.migrate ()
+
+(* Starts crypto library*)
+let () = Mirage_crypto_rng_unix.initialize ()
+
 (* Setting the new node on network *)
 let start_node () =
   if
     not
-      (Node.check_current_node_on_network
-         current_node
+      (Node.check_current_node_on_network current_node
          (Lwt_main.run (Postgres.get_network ())))
   then
     Lwt_main.run (Postgres.update_network current_node) |> fun () ->

@@ -106,8 +106,7 @@ let insert_block b =
     Block.unpack_the_block b
   in
   let json_str_txns =
-    transactions |> Mempool.of_tx_list |> Mempool.to_yojson
-    |> Yojson.Safe.pretty_to_string
+    transactions |> Transaction.to_yojson_list |> Yojson.Safe.pretty_to_string
   in
   dispatch
     (Query.insert_block ~index ~timestamp ~nonce ~merkle_root

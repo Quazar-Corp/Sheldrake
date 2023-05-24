@@ -81,8 +81,7 @@ let read_chain =
       function_out]
     (fun ~index ~timestamp ~nonce ~merkle_root ~transactions ~prev_hash ~hash ->
       let transactions' =
-        Yojson.Safe.from_string transactions
-        |> Mempool.of_yojson |> Mempool.to_tx_list
+        Yojson.Safe.from_string transactions |> Transaction.of_yojson_list
       in
       Block.init index timestamp nonce merkle_root transactions' prev_hash hash)
     ()
