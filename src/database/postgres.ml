@@ -21,7 +21,7 @@ let dispatch func =
   let open Lwt.Syntax in
   let* result = Caqti_lwt.Pool.use func pool in
   match result with
-  | Ok data -> Caqti_lwt.Pool.drain pool |> fun _ -> Lwt.return data
+  | Ok data -> Lwt.return data
   | Error error -> Lwt.fail (Query_failed (Caqti_error.show error))
 (* ********************************************************************************************* *)
 
