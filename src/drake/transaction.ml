@@ -79,7 +79,6 @@ let of_yojson_list json =
   | Error err -> err |> fun _ -> raise Parsing.Parse_error
 
 let length mempool = List.length mempool
-
 let add_transaction mempool transaction = transaction :: mempool
 
 let five_transactions mempool =
@@ -91,7 +90,7 @@ let five_transactions mempool =
     List.nth mempool (Random.int (List.length mempool));
   ]
 
-let is_valid_mempool (mempool: t list) =
+let is_valid_mempool (mempool : t list) =
   let rec aux = function
     | [] -> true
     | hd :: tl -> if not (is_valid hd) then false else aux tl
