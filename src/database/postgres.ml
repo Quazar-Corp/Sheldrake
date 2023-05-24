@@ -87,7 +87,7 @@ let migrate () =
 (* ********************************************************************************************* *)
 let get_network () = dispatch Query.read_network
 
-let update_network (node : Node.host_info) =
+let update_network (node : Node.t) =
   let hostname, address = Node.unpack_the_node node in
   dispatch (Query.update_network ~hostname ~address)
 

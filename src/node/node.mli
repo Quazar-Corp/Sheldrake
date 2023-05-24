@@ -1,52 +1,51 @@
 type query
-type host_info
 type t
 
 (* Function to avoid inference problems *)
-val init : string -> string -> host_info
+val init : string -> string -> t
 
 (* Compare host infos *)
-val ( = ) : host_info -> host_info -> bool
+val ( = ) : t -> t -> bool
 
 (* host info from query *)
-val query_to_host_info : query -> host_info
+val query_to_t : query -> t
 
 (* host info to query *)
-val host_info_to_query : int -> host_info -> query
+val t_to_query : int -> t -> query
 
 (* External function to retrieve ip address with global scope *)
 external get_global_addr : unit -> string = "stub_get_global_addr"
 
 (* Network length *)
-val length : t -> int
+val length : t list -> int
 
 (* Due to lack of knownledge on type driven design *)
-val extract_list : t -> host_info list
-val unpack_the_node : host_info -> string * string
+val extract_list : t list -> t list
+val unpack_the_node : t -> string * string
 
 (* yojson generated function *)
-val host_info_of_yojson : Yojson.Safe.t -> (host_info, string) Result.result
+val of_yojson : Yojson.Safe.t -> (t, string) Result.result
 
 (* yojson generated function *)
-val host_info_to_yojson : host_info -> Yojson.Safe.t
-
-(* Node list from json *)
-val of_yojson : Yojson.Safe.t -> t
-
-(* Node list to json *)
 val to_yojson : t -> Yojson.Safe.t
 
+(* Node list from json *)
+val of_yojson_list : Yojson.Safe.t -> t list
+
+(* Node list to json *)
+val to_yojson_list : t list -> Yojson.Safe.t
+
 (* Add a new node to the network *)
-val add_node : t -> host_info -> t
+val add_node : t -> t list -> t list
 
 (* retrieve loopback global scope ip and localhost name*)
-val retrieve_host_entries : host_info
+val retrieve_host_entries : t
 
 (* get node ip *)
-val addr : host_info -> string
+val addr : t -> string
 
 (* get node hostname *)
-val name : host_info -> string
+val name : t -> string
 
 (* Check if the current is already registered *)
-val check_current_node_on_network : host_info list -> host_info -> bool
+val check_current_node_on_network : t -> t list -> bool

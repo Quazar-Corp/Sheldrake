@@ -4,10 +4,10 @@ open Drake
 val migrate : unit -> unit
 
 (* READ the all the nodes registered *)
-val get_network : unit -> Node.host_info list Lwt.t
+val get_network : unit -> Node.t list Lwt.t
 
 (* UPDATE the network with a new node | INSERT a new node in the network --> which is better?*)
-val update_network : Node.host_info -> unit Lwt.t
+val update_network : Node.t -> unit Lwt.t
 
 (* INSERT a validated transaction in Mempool *)
 val insert_transaction : Transaction.t -> unit Lwt.t

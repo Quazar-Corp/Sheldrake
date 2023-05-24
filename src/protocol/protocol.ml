@@ -4,7 +4,7 @@ let update_nodes_on_network new_node =
   let open Lwt.Syntax in
   let* updated_network = Storage.get_network () in
   let network_string =
-    Yojson.Safe.pretty_to_string (Node.to_yojson updated_network)
+    Yojson.Safe.pretty_to_string (Node.to_yojson_list updated_network)
   in
   let client_addr = Node.addr new_node in
   let rec aux = function
@@ -170,7 +170,7 @@ let consensus_update_nodes current_node to_verify =
           req |> fun (resp, body) ->
           resp |> fun _ ->
           let* str_body = Cohttp_lwt.Body.to_string body in
-          Node.of_yojson (Yojson.Safe.from_string str_body) |> fun ls ->
+          Node.of_yojson_list (Yojson.Safe.from_string str_body) |> fun ls ->
           if Node.length ls = Node.length to_verify then aux (count + 1) tl
           else aux count tl
   in

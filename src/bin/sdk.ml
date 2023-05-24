@@ -15,7 +15,8 @@ let mine_block req =
   let* mempool = Postgres.get_mempool () in
   let new_block =
     Chain.mine_block (Chain.of_b_list chain)
-      (Mempool.five_transactions (Mempool.of_tx_list mempool))
+      (Transaction.five_transactions mempool) 
+      (* TODO: how many and how to select the transactions in the mempool*)
   in
   Postgres.insert_block new_block |> fun _ ->
   Protocol.update_chain_on_network current_node |> fun _ ->
@@ -63,8 +64,7 @@ let read_mempool req =
     ~time:(Unix.time ());
   let open Lwt.Syntax in
   let* mempool = Postgres.get_mempool () in
-  let json = Mempool.to_yojson (Mempool.of_tx_list mempool) in
-  (* Gambiarra *)
+  let json = Transaction.to_yojson_list mempool in
   let response = Response.of_json json in
   req |> fun _req -> Lwt.return response
 
@@ -141,8 +141,8 @@ let read_network req =
   Logs.info ~func_name:"read_network" ~request:req ~req_type:"GET"
     ~time:(Unix.time ());
   let open Lwt.Syntax in
-  let* network = Storage.get_network () in
-  let json = Node.to_yojson network in
+  let* network = Postgres.get_network () in
+  let json = Node.to_yojson_list network in
   let response = Response.of_json json in
   req |> fun _req -> Lwt.return response
 
@@ -152,7 +152,7 @@ let add_node req =
     ~time:(Unix.time ());
   let open Lwt.Syntax in
   let* json = Request.to_json_exn req in
-  let updated = Node.of_yojson json in
+  let updated = Node.of_yojson_list json in
   let* flag = Protocol.consensus_update_nodes current_node updated in
   let response =
     if flag then
@@ -170,8 +170,8 @@ let start_node () =
   if
     not
       (Node.check_current_node_on_network
-         (Lwt_main.run (Postgres.get_network ()))
-         current_node)
+         current_node
+         (Lwt_main.run (Postgres.get_network ())))
   then
     Lwt_main.run (Postgres.update_network current_node) |> fun () ->
     Protocol.update_nodes_on_network current_node
