@@ -1,5 +1,20 @@
 open Drake
 
+(* CHAIN TABLE *)
+val ensure_table_chain_exists : 
+  (module Rapper_helper.CONNECTION) ->
+  (unit, [> Caqti_error.call_or_retrieve ]) result Lwt.t
+
+(* MEMPOOL TABLE *)
+val ensure_table_mempool_exists : 
+  (module Rapper_helper.CONNECTION) ->
+  (unit, [> Caqti_error.call_or_retrieve ]) result Lwt.t
+
+(* NETWORK TABLE *)
+val ensure_table_network_exists : 
+  (module Rapper_helper.CONNECTION) ->
+  (unit, [> Caqti_error.call_or_retrieve ]) result Lwt.t
+
 (* Retrieve the blockchain network (all the nodes)*)
 val read_network :
   (module Rapper_helper.CONNECTION) ->

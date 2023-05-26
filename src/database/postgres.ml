@@ -27,60 +27,12 @@ let dispatch func =
 
 (* Running migrations *)
 (* ********************************************************************************************* *)
-(* CHAIN TABLE *)
-let ensure_table_blocks_exists =
-  [%rapper
-    execute
-      {sql|
-                CREATE TABLE IF NOT EXISTS chain (
-                    id SERIAL PRIMARY KEY NOT NULL,
-                    index INT NOT NULL, 
-                    timestamp VARCHAR NOT NULL,
-                    nonce INT NOT NULL,
-                    merkle_root VARCHAR NOT NULL,
-                    transactions JSONB NULL,
-                    prev_hash VARCHAR NOT NULL,
-                    hash VARCHAR NOT NULL
-                );
-            |sql}]
-    ()
-
-(* MEMPOOL TABLE *)
-let ensure_table_transactions_exists =
-  [%rapper
-    execute
-      {sql|
-                CREATE TABLE IF NOT EXISTS mempool (
-                    id SERIAL PRIMARY KEY NOT NULL,
-                    sender VARCHAR NOT NULL,
-                    recipient VARCHAR NOT NULL,
-                    amount FLOAT NOT NULL,
-                    timestamp VARCHAR NOT NULL,
-                    key VARCHAR NOT NULL,
-                    signature VARCHAR NOT NULL
-                );
-            |sql}]
-    ()
-
-(* NETWORK TABLE *)
-let ensure_table_nodes_exist =
-  [%rapper
-    execute
-      {sql|
-                CREATE TABLE IF NOT EXISTS network (
-                    id SERIAL PRIMARY KEY NOT NULL,
-                    hostname VARCHAR NOT NULL,
-                    address VARCHAR NOT NULL
-                );
-            |sql}]
-    ()
-
 (* Running *)
 let migrate () =
   Printf.printf ">>> Migrating the database\n";
-  dispatch ensure_table_blocks_exists |> Lwt_main.run |> fun () ->
-  dispatch ensure_table_transactions_exists |> Lwt_main.run |> fun () ->
-  dispatch ensure_table_nodes_exist |> Lwt_main.run
+  dispatch Query.ensure_table_chain_exists |> Lwt_main.run |> fun () ->
+  dispatch Query.ensure_table_mempool_exists |> Lwt_main.run |> fun () ->
+  dispatch Query.ensure_table_network_exists |> Lwt_main.run
 (* ********************************************************************************************* *)
 
 (* Queries *)
