@@ -87,6 +87,13 @@ let add_block block chain =
   update_hash block (hash_of_string (to_string block)) |> fun () ->
   block :: chain
 
+let genesis_block =
+  let block =
+    create ~nonce:0 ~transactions:[] ~prev_hash:(String.init 64 (fun _ -> '0'))
+  in
+  update_hash block (hash_of_string (to_string block));
+  block
+
 let proof_of_work prev_nonce =
   let rec pow a = function 0 -> 1 | 1 -> a | n -> pow a (n / 2) in
   let fingerprint current_nonce =
@@ -117,16 +124,12 @@ let is_valid_chain chain =
   aux chain
 
 let mine_block transactions chain =
-  (* Verification to generate the genesis block *)
-  if List.length chain = 0 then
-    create ~nonce:0 ~transactions:[] ~prev_hash:(String.init 64 (fun _ -> '0'))
-  else
-    let nonce =
-      proof_of_work (get_nonce (get_previous_block chain))
-      (* last block nonce *)
-    in
-    let prev_hash = get_hash (get_previous_block chain) (* last block hash *) in
-    create ~nonce ~transactions ~prev_hash
+  let nonce =
+    proof_of_work (get_nonce (get_previous_block chain))
+    (* last block nonce *)
+  in
+  let prev_hash = get_hash (get_previous_block chain) (* last block hash *) in
+  create ~nonce ~transactions ~prev_hash
 
 let replace_chain chain_list max_length =
   let rec aux bigger size = function

@@ -171,6 +171,11 @@ let () = Postgres.migrate ()
 let () = Mirage_crypto_rng_unix.initialize ()
 
 (* Setting the new node on network *)
+let check_genesis_block () =
+  let chain = Lwt_main.run (Postgres.get_chain ()) in
+  if List.length chain = 0 then Postgres.insert_block Block.genesis_block
+  else Lwt.return_unit
+
 let start_node () =
   if
     not
@@ -184,7 +189,7 @@ let start_node () =
 (* App *)
 let _ =
   Printf.printf ">>> Starting node...\n";
-  Lwt_main.run (start_node ());
+  Lwt_main.run (check_genesis_block () |> fun _ -> start_node ());
   App.empty
   |> App.host (Node.addr current_node)
   |> App.port 8333

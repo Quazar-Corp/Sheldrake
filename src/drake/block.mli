@@ -1,5 +1,7 @@
 type t
 
+val genesis_block : t
+
 val init :
   int -> string -> int -> string -> Transaction.t list -> string -> string -> t
 
