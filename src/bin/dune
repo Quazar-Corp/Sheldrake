@@ -3,8 +3,6 @@
  (name sdk)
  (libraries
   opium
-  chain
-  mempool
   database
   protocol
   node

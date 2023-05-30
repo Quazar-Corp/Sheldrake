@@ -87,7 +87,7 @@ let migrate () =
 (* ********************************************************************************************* *)
 let get_network () = dispatch Query.read_network
 
-let update_network (node : Node.host_info) =
+let update_network (node : Node.t) =
   let hostname, address = Node.unpack_the_node node in
   dispatch (Query.update_network ~hostname ~address)
 
@@ -106,8 +106,7 @@ let insert_block b =
     Block.unpack_the_block b
   in
   let json_str_txns =
-    transactions |> Mempool.of_tx_list |> Mempool.to_yojson
-    |> Yojson.Safe.pretty_to_string
+    transactions |> Transaction.to_yojson_list |> Yojson.Safe.pretty_to_string
   in
   dispatch
     (Query.insert_block ~index ~timestamp ~nonce ~merkle_root

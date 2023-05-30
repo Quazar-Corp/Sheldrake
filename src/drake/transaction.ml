@@ -64,9 +64,35 @@ let calculate_merkle_root txs =
   aux (List.length list_of_hashs) list_of_hashs
 (*list_of_hashs |> fun _ -> list_of_lens |> fun _ -> "Need to study merkle tree"*)
 
-let is_valid tx =
+let is_valid (tx : t) =
   if
     Crypto.verify_signature ~signature:tx.signature ~key:tx.key
       ~message:(to_string tx)
   then true
   else false
+
+let to_yojson_list mempool = [%to_yojson: t list] mempool
+
+let of_yojson_list json =
+  match [%of_yojson: t list] json with
+  | Ok mempool -> mempool
+  | Error err -> err |> fun _ -> raise Parsing.Parse_error
+
+let length mempool = List.length mempool
+let add_transaction mempool transaction = transaction :: mempool
+
+let five_transactions mempool =
+  [
+    List.nth mempool (Random.int (List.length mempool));
+    List.nth mempool (Random.int (List.length mempool));
+    List.nth mempool (Random.int (List.length mempool));
+    List.nth mempool (Random.int (List.length mempool));
+    List.nth mempool (Random.int (List.length mempool));
+  ]
+
+let is_valid_mempool (mempool : t list) =
+  let rec aux = function
+    | [] -> true
+    | hd :: tl -> if not (is_valid hd) then false else aux tl
+  in
+  aux mempool
