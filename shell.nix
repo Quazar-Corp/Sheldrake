@@ -1,33 +1,24 @@
 let
-  nixpkgs-sources =
-    builtins.fetchTarball
-      https://github.com/anmonteiro/nix-overlays/archive/master.tar.gz;
-      pkgs = import nixpkgs-sources { };
-      ocamlPackages = pkgs.ocaml-ng.ocamlPackages_4_14;
+  nixpkgs = import <nixpkgs> {};
+  mach-nix = import (builtins.fetchGit {
+    url = "https://github.com/DavHau/mach-nix";
+    ref = "refs/tags/3.5.0";
+  }) {};
+  pyEnv = mach-nix.mkPython rec {
+
+    requirements = ''
+      requests
+      netifaces
+    '';
+
+  };
 in
-pkgs.mkShell {
-  # build tools
-  nativeBuildInputs = with ocamlPackages; [ 
-    ocaml 
-    findlib 
-    dune_2 
-    ocaml-lsp 
-  ];
-  
-  # dependencies
-  buildInputs = with ocamlPackages; [ 
-    caqti
-    caqti-lwt
-    caqti-driver-postgresql 
-    uuidm
-    ppx_deriving_yojson
-    lwt_ppx
-    cohttp-lwt-unix
-    mirage-crypto-rng
-    sha
-    base64
-    alcotest
-    qcheck-alcotest
-    opium
-  ];
+mach-nix.nixpkgs.mkShell {
+
+  buildInputs = [
+    pyEnv
+  ] ;
+
+  shellHook = ''
+  '';
 }
